@@ -2,14 +2,14 @@ from fastapi import FastAPI
 from sql import inserts, selects
 from utils import find_date
 import datetime
-from schemas.schemas import Student
+from schemas.schemas import Student, StudentGrade
 from typing import List, Optional
 from pydantic import BaseModel
 app = FastAPI()
 key = '1231234sda;nsdsajoi123'
 
 
-@app.post("/auth/")
+@app.get("/auth/")
 async def auth(phone: str):
     print(phone)
     obj = {}
@@ -29,7 +29,7 @@ async def auth(phone: str):
 
 
 @app.get('/subjects/')
-def subjects(t_id: int, date: str):
+async def subjects(t_id: int, date: str):
     cn = selects.connect_database()
     # new_date = utils.find_date(date)
     # find_date
@@ -42,7 +42,7 @@ def subjects(t_id: int, date: str):
     }
 
 @app.get('/classes/')
-def classes(t_id: int, date: str, subject_i: int):
+async def classes(t_id: int, date: str, subject_i: int):
     time = find_date.find_date(date)
     cn = selects.connect_database()
     print(time)
@@ -57,7 +57,7 @@ def classes(t_id: int, date: str, subject_i: int):
 
 
 @app.get('/students/')
-def root(class_id: int):
+async def root(class_id: int):
     print("Students")
     cn = selects.connect_database()
     q = selects.all_class_students(cn, class_id)
@@ -69,21 +69,23 @@ def root(class_id: int):
     }
 
 
-@app.post('/attendance/', status_code=200)
+@app.post('/attendance/', status_code=201)
 def attendance(sch_i: int, students: List[Student], date: str):
     print('Attendance')
     print(students)
     cn = selects.connect_database()
     q = inserts.attendance(cn, students, sch_i, date)
     selects.close_connection(cn)
-    return {}
+    return {
+        "message": q
+    }
 
 
 @app.post('/grade/', status_code=200)
-def grades(sch_i: int, dt: str):
+async def grades(sch_i: int, students: List[StudentGrade], dt: str):
     print("grades")
     cn = selects.connect_database()
-
+    q = inserts.grade(cn, students, sch_i, dt)
     selects.close_connection(cn)
     return {
         'type': 'grade',
@@ -92,12 +94,35 @@ def grades(sch_i: int, dt: str):
     }
 
 
-@app.post('/task/', status_code=201)
-def tasks(sch_i: int, lbl: str, ):
+@app.post('/task/', status_code=200)
+async def tasks(sch_i: int, lbl: str, dt: str):
     cn = selects.connect_database()
-    # q =
-    select.close_connection(cn)
+    q = inserts.task(cn, sch_i, lbl, dt)
+    selects.close_connection(cn)
     return {
         'type': 'task',
         'message': q
+    }
+
+
+@app.get('/task_date/', status_code=200)
+async def task_dates(teacher_i: int, class_i: int, subject_i: int, dt: str):
+    print("print next 3 dates")
+    cn = selects.connect_database()
+    q = inserts.task_dates(cn, teacher_i, class_i, subject_i, dt)
+    selects.close_connection(cn)
+    return {
+        'type': 'task-date',
+        'dates': q['date']
+    }
+
+
+@app.get('/dates/', status_code=200)
+async def week_dates(date: str):
+    print('This Week Dates')
+    day, month, year = [int(i) for i in date.split('/')]
+    today = datetime.date(year, month, day)
+    dates = [today + datetime.timedelta(days=i) for i in range(0 - today.weekday(), 5 - today.weekday())]
+    return {
+        'dates': dates
     }

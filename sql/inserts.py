@@ -1,5 +1,5 @@
 import pymysql
-from datetime import datetime
+from datetime import datetime, timedelta
 import datetime as dtm
 # _mysql = pymysql.install_as_MySQLdb()
 
@@ -42,23 +42,19 @@ def attendance(con, list, sch_i, dt=None):
     return "Your data(attendance) was added to journal"
 
 
-def update_grade(con, list, sch_i, dt=None):
+def grade(con, list, sch_i, dt=None):
     cr = con.cursor()
-    date_fake = '2020-10-12'
     day, month, year = [int(i) for i in dt.split('/')]
     dt = f"{year}-{month}-{day}"
-    print("Updating Grade")
     c_dt = datetime.now()
-    c_year = c_dt.year
+    print("Updating Grade")
     type = 'Посещение'
 
     for row in list:
         sql = (
             f"update school_journal "
-            f"set pnt = {row['pnt']} , lbl = '{row['lbl']}' "
-            f"where j_i = ("
-            f"select j_i from school_journal "
-            f"where sch_i={sch_i} and student_i = {row.student_i}, and dt = '{dt}');"
+            f"set pnt = {row.pnt}, lbl = '{row.lbl}' "
+            f"where sch_i= {sch_i} and student_i = {row.student_i}  and dt = '{dt}'; "
         )
 
         #INSERT TO LOG
@@ -83,7 +79,65 @@ def update_grade(con, list, sch_i, dt=None):
         print(sql_log)
         cr.execute(sql_log)
         con.commit()
+
         print(sql)
         cr.execute(sql)
         con.commit()
     return "Your data(grades) added to journal"
+
+def task(cn, sch_i, lbl, dt = None):
+    # date_fake = "2020-10-12"
+    print("Inserting task")
+    day, month, year = [int(i) for i in dt.split('/')]
+    dt = f"{year}-{month}-{day}"
+    c_dt = datetime.now()
+    c_year = c_dt.year
+    cr = cn.cursor()
+
+    sql = (
+        f"insert into school_task "
+        f"(sch_i, dt, c_dt, c_year, lbl, own_i) "
+        f"values ({sch_i}, '{dt}', '{c_dt}', {c_year}, '{lbl}', 1); "
+        # f"on duplicate key update   lbl = {lbl} "
+
+    )
+    print(sql)
+    cr.execute(sql)
+    cn.commit()
+
+    return {
+        "message": "Homework has been added to journal."
+    }
+
+
+def task_dates(cn, teacher_i,class_i,subject_i, dt):
+    day, month, year = [int(i) for i in dt.split('/')]
+    date = datetime(year, month, day)
+
+    # dt = f"{year}-{month}-{day}"
+    sql = (
+        f"select distinct(s_week) "
+        f"from school_schedule "
+        f"where teacher_i = {teacher_i} "
+        f"and class_i = {class_i} "
+        f"and subject_i = {subject_i};"
+    )
+
+    cr = cn.cursor()
+    cr.execute(sql)
+    rows = cr.fetchall()
+    days = [row[0] for row in rows]
+    print(days)
+    counter = 0
+    ans = []
+    add = 1
+    while counter < 3:
+        if len(days) == 1:
+           add = 7
+        date += timedelta(days=add)
+        if date.weekday() in days:
+            ans.append(date.date())
+            counter += 1
+    return {
+        'date': ans
+    }

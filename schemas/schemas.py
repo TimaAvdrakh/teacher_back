@@ -4,3 +4,6 @@ class Student(BaseModel):
     student_i: int
     vst: bool = False
     pnt: int
+
+class StudentGrade(Student):
+    lbl: str
