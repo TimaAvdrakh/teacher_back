@@ -48,7 +48,7 @@ def attendance(con, list, sch_i, dt=None):
     return "Your data(attendance) was added to journal"
 
 
-def grade(con, list, sch_i, dt=None):
+def grade(con, list, sch_i, dt):
     cr = con.cursor()
     day, month, year = [int(i) for i in dt.split('/')]
     dt = f"{year}-{month}-{day}"

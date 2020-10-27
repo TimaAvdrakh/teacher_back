@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 from sql import inserts, selects
 from utils import find_date
 import datetime
@@ -70,7 +70,7 @@ async def root(class_id: int):
 
 
 @app.post('/attendance/', status_code=201)
-def attendance(sch_i: int, students: List[Student], date: str):
+def attendance(students: List[Student], date: str , sch_i: int ):
     print('Attendance')
     print(students)
     cn = selects.connect_database()
@@ -81,7 +81,7 @@ def attendance(sch_i: int, students: List[Student], date: str):
     }
 
 
-@app.post('/grade/', status_code=200)
+@app.post('/grade/', status_code=201)
 async def grades(sch_i: int, students: List[StudentGrade], dt: str):
     print("grades")
     cn = selects.connect_database()
