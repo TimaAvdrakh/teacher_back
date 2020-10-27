@@ -39,8 +39,13 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+<<<<<<< HEAD
+  <component name="JupyterTrust" id="a88635ef-923f-4b38-a223-bc6b6d6c2c59" />
+=======
   <component name="JupyterTrust" id="51db32d8-fab4-4288-b891-5edfb26881fa" />
+>>>>>>> c89a5974a77efb34ae73f88b08a07f37a9163bba
   <component name="ProjectId" id="1jDNBXnHeeOYOoEnhAo7iH8tuXs" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -48,7 +53,11 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+<<<<<<< HEAD
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../dockerize-celery-django-app" />
+=======
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../teacher_backend/tb" />
+>>>>>>> c89a5974a77efb34ae73f88b08a07f37a9163bba
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -58,8 +67,17 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1603334567224</updated>
+<<<<<<< HEAD
+      <workItem from="1603334571929" duration="23292000" />
+      <workItem from="1603781344509" duration="5511000" />
+=======
       <workItem from="1603334571929" duration="22001000" />
+<<<<<<< HEAD
       <workItem from="1603453200264" duration="19776000" />
+=======
+      <workItem from="1603453200264" duration="14991000" />
+>>>>>>> c89a5974a77efb34ae73f88b08a07f37a9163bba
+>>>>>>> beb6bf9cb2e5888313d5381dee5935d22f9e892d
     </task>
     <servers />
   </component>
@@ -78,6 +96,14 @@
     </option>
   </component>
   <component name="WindowStateProjectService">
+<<<<<<< HEAD
+    <state x="743" y="311" width="424" height="491" key="FileChooserDialogImpl" timestamp="1603625942202">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="743" y="311" width="424" height="491" key="FileChooserDialogImpl/0.27.1920.1053@0.27.1920.1053" timestamp="1603625942202" />
+    <state x="1272" y="326" width="672" height="58" key="search.everywhere.popup" timestamp="1603785813941">
+      <screen x="0" y="27" width="1920" height="1053" />
+=======
     <state x="743" y="311" width="424" height="491" key="FileChooserDialogImpl" timestamp="1603703702109">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
@@ -88,7 +114,9 @@
     <state x="570" y="167" width="770" height="780" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.27.1920.1053@0.27.1920.1053" timestamp="1603685105872" />
     <state x="2543" y="361" width="672" height="678" key="search.everywhere.popup" timestamp="1603354001477">
       <screen x="0" y="27" width="3840" height="1175" />
+>>>>>>> c89a5974a77efb34ae73f88b08a07f37a9163bba
     </state>
+    <state x="1272" y="326" width="672" height="58" key="search.everywhere.popup/0.27.1920.1053/1920.122.1920.1080@0.27.1920.1053" timestamp="1603785813941" />
     <state x="2543" y="361" width="672" height="678" key="search.everywhere.popup/0.27.3840.1175@0.27.3840.1175" timestamp="1603354001477" />
   </component>
 </project>

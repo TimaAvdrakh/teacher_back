@@ -91,6 +91,7 @@ def grade(con, list, sch_i, dt):
         con.commit()
     return "Your data(grades) added to journal"
 
+
 def task(cn, sch_i, lbl, dt = None):
     # date_fake = "2020-10-12"
     print("Inserting task")

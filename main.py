@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Body
 from sql import inserts, selects
-from utils import find_date
+from utils.find_date import find_date
 import datetime
 from schemas.schemas import Student, StudentGrade
 from typing import List, Optional
@@ -43,7 +43,7 @@ async def subjects(t_id: int, date: str):
 
 @app.get('/classes/')
 async def classes(t_id: int, date: str, subject_i: int):
-    time = find_date.find_date(date)
+    time = find_date(date)
     cn = selects.connect_database()
     print(time)
     q = selects.teacher_classes(cn, t_id, subject_i, time)
@@ -145,5 +145,31 @@ async def week_dates(date: str):
 
 
     return {
-        'dates': ans
+        'dates': dates
+    }
+
+@app.get('/journal/', status_code=200)
+async def teacher_journal(teacher_i: int, date: str):
+    print("Day Journal")
+    cn = selects.connect_database()
+    time = find_date(date)
+    q = selects.teacher_journal(cn, teacher_i, time)
+    day, month, year = [i for i in date.split('/')]
+    date = f"{year}-{month}-{day}"
+    ans = []
+    print(q)
+    for row in q:
+        # sc.sch_i, sc.s_time, sub.lbl, cl.lbl
+        query = selects.journal_task(cn, row[0], date)
+        hour = row[1].seconds//3600
+        minutes = row[1].seconds-hour
+        temp = {
+            "time": f"{row[1]}",
+            "subject": row[2],
+            "class": row[3],
+            "homework": query,
+        }
+        ans.append(temp)
+    return {
+        'data': ans
     }

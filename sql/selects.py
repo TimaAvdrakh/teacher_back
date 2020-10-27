@@ -144,3 +144,50 @@ def all_class_students(cn, class_id):
     return {
         'data': ans
     }
+
+
+def teacher_journal(cn,teacher_i, time):
+    sql = (
+        f"select sc.sch_i, sc.s_time, sub.lbl, cl.lbl "
+        f"from school_schedule sc "
+        f"inner join school_subject sub "
+        f"on sc.subject_i = sub.subject_i "
+        f"inner join school_class cl "
+        f"on sc.class_i = cl.class_id "
+        f"where sc.teacher_i = {teacher_i} and sc.s_week={time} "
+        f"order by sc.s_time;"
+    )
+    print(sql)
+
+    sqlfake = (
+        f"select sc.s_time, sub.lbl, cl.lbl, sc.kab  "
+        f"from school_schedule sc "
+        f"inner join school_subject sub "
+        f"on sc.subject_i = sub.subject_i "
+        f"inner join school_class cl "
+        f"on sc.class_i = cl.class_id "
+        f"where sc.teacher_i = {teacher_i} and s_week={time} "
+        f"order by sc.s_time;"
+    )
+    cr = cn.cursor()
+    print("Journal")
+    cr.execute(sql)
+    rows = cr.fetchall()
+    print(rows)
+    return rows
+
+
+def journal_task(cn, sch_i, dt):
+    sql = (
+        f"select lbl "
+        f"from school_task "
+        f"where sch_i={sch_i} and dt={dt};"
+    )
+
+    cr = cn.cursor()
+    cr.execute(sql)
+    homework = cr.fetchone()
+    print(homework)
+    if homework:
+        return homework
+    return "No homework"
