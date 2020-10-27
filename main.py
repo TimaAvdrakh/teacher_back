@@ -31,7 +31,7 @@ async def auth(phone: str):
 @app.get('/subjects/')
 async def subjects(t_id: int, date: str):
     cn = selects.connect_database()
-    # new_date = utils.find_date(date)
+    new_date = find_date.find_date(date)
     # find_date
     query = selects.teacher_subjects(cn, t_id, new_date)
     selects.close_connection(cn)
@@ -117,12 +117,33 @@ async def task_dates(teacher_i: int, class_i: int, subject_i: int, dt: str):
     }
 
 
+d = {
+        1: 'Понидельник',
+        2: 'Вторник',
+        3: 'Среда',
+        4: 'Четверг',
+        5: 'Пятница',
+        6: 'Суббота',
+    }
+
 @app.get('/dates/', status_code=200)
 async def week_dates(date: str):
     print('This Week Dates')
     day, month, year = [int(i) for i in date.split('/')]
     today = datetime.date(year, month, day)
-    dates = [today + datetime.timedelta(days=i) for i in range(0 - today.weekday(), 5 - today.weekday())]
+    dates = [[i, today + datetime.timedelta(days=i)] for i in range(0 - today.weekday(), 6 - today.weekday())]
+    d = ('Понедельник','Вторник','Среда','Четверг','Пятница', 'Суббота')
+    ans = []
+    count = 0
+    for date in dates:
+        year, month, day = [i for i in str(date[1]).split('-')]
+        s = str(date[0])
+        a = f"{day}/{month}/{year}"
+        ans.append([d[count], a])
+        count += 1
+
+
+
     return {
-        'dates': dates
+        'dates': ans
     }

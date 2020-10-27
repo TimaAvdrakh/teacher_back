@@ -1,18 +1,28 @@
 import pymysql
 # _mysql = pymysql.install_as_MySQLdb()
-
+import mariadb
+import sys
 
 def connect_database():
-    con = pymysql.connect(host='localhost',
-                          port=3307,
-                          user='root',
-                          db='odm',
-                          password='Sas2016-')
+    try:
+        con = mariadb.connect(
+            user="admin",
+            password="adm2016@=",
+            host="nst.usmcontrol.com",
+            db='odm',
+            port=6033
+            # host = "nst.usmcontrol.com",
+            #host ="10.10.20.50
+            #port = 3306
+        )
+    except mariadb.Error as e:
+        print(f"Error connecting to MariaDB Platform: {e}")
+        sys.exit(1)
     return con
-
 
 def close_connection(con):
     con.close()
+
 
 
 def teacher_org(cn, org_id):
