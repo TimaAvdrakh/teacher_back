@@ -66,7 +66,7 @@ def teacher_subjects(cn, teacher_id, time):
     ans = []
     for row in rows:
         d = {
-            'id': row[0],
+            'subject_i': row[0],
             'lesson': row[1]
         }
 
@@ -93,13 +93,16 @@ def teacher_classes(con, teacher_i, subject_i, s_week):
     print(sql)
     ans = []
     rows = cr.fetchall()
+    counter = 0
     for row in rows:
         d = {
+            'id': counter,
             'sch_i': row[0],
             'class_i': row[1],
             'lbl': row[2]
         }
         ans.append(d)
+        counter += 1
 
     # for i in range(8-10):
     #     for j in ('A', 'Б', 'В' ,'Г'):
@@ -191,3 +194,56 @@ def journal_task(cn, sch_i, dt):
     if homework:
         return homework
     return "No homework"
+
+def p_class(cn, teacher_i):
+    sql = (
+        f"select s.student_per_id,cl.lbl, p.first_name, p.last_name "
+        f"from person as p "
+        f"inner join school_student as s "
+        f"on student_per_id = person_i "
+        f"inner join school_class as cl "
+        f"on cl.class_id = s.class_id "
+        f"where cl.class_id = ( "
+        f"select distinct(class_id) from school_class where teacher_per_id = {teacher_i} limit 1"
+        f"); "
+    )
+    cr = cn.cursor()
+    cr.execute(sql)
+    rows = cr.fetchall()
+    students = []
+    amount = len(rows)
+    cl = rows[0][1]
+    for row in rows:
+        temp = {
+            'name': f"{row[2]} {row[3]}",
+            'student_i': row[0],
+            'phone': "+12321321313"
+        }
+        students.append(temp)
+
+    return {
+        'class': cl,
+        'amount': amount,
+        'students': students
+    }
+
+def student_parents(cn, student_id):
+    sql = (
+        f"select p.first_name, p.last_name "
+        f"from person as p "
+        f"inner join school_parent sp "
+        f"on sp.parent_per_id = p.person_i "
+        f"where sp.student_per_id = {student_id};"
+    )
+    cr = cn.cursor()
+    cr.execute(sql)
+    rows = cr.fetchall()
+
+    ans = []
+    for row in rows[:2]:
+        temp = {
+            "name": f"{row[0]} {row[1]}",
+            "phone": "+8273388393"
+        }
+        ans.append(temp)
+    return ans

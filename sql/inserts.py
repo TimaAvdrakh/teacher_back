@@ -1,6 +1,8 @@
 import pymysql
 from datetime import datetime, timedelta
 import datetime as dtm
+import mariadb
+from utils.reformat import reformat_date
 # _mysql = pymysql.install_as_MySQLdb()
 
 
@@ -26,6 +28,9 @@ def close_connection(con):
 
 def attendance(con, list, sch_i, dt=None):
     cr = con.cursor()
+    print(dt)
+    date = [i for i in dt.split(' ')]
+    dt = date[1]
     day,month, year = [int(i) for i in dt.split('/')]
     dt = f"{year}-{month}-{day}"
     print("Inserting Or Updateing Attendance")
@@ -45,10 +50,14 @@ def attendance(con, list, sch_i, dt=None):
         cr.execute(sql)
         # print(cr.statement())
         con.commit()
-    return "Your data(attendance) was added to journal"
+    return {
+        'message': "Your data(attendance) was added to journal"
+    }
 
 
 def grade(con, list, sch_i, dt):
+    date = [i for i in dt.split(' ')]
+    dt = date[1]
     cr = con.cursor()
     day, month, year = [int(i) for i in dt.split('/')]
     dt = f"{year}-{month}-{day}"
@@ -92,8 +101,9 @@ def grade(con, list, sch_i, dt):
     return "Your data(grades) added to journal"
 
 
-def task(cn, sch_i, lbl, dt = None):
+def task(cn, sch_i, lbl, dt=None):
     # date_fake = "2020-10-12"
+    print(dt)
     print("Inserting task")
     day, month, year = [int(i) for i in dt.split('/')]
     dt = f"{year}-{month}-{day}"
@@ -118,6 +128,8 @@ def task(cn, sch_i, lbl, dt = None):
 
 
 def task_dates(cn, teacher_i,class_i,subject_i, dt):
+    date = [i for i in dt.split(' ')]
+    dt = date[1]
     day, month, year = [int(i) for i in dt.split('/')]
     date = datetime(year, month, day)
 
@@ -134,7 +146,6 @@ def task_dates(cn, teacher_i,class_i,subject_i, dt):
     cr.execute(sql)
     rows = cr.fetchall()
     days = [row[0] for row in rows]
-    print(days)
     counter = 0
     ans = []
     add = 1
@@ -143,8 +154,12 @@ def task_dates(cn, teacher_i,class_i,subject_i, dt):
            add = 7
         date += timedelta(days=add)
         if date.weekday() in days:
-            ans.append(date.date())
+            d = date.date()
+            str = f"{d}"
+            str = reformat_date(str)
+            ans.append(str)
             counter += 1
+
     return {
         'date': ans
     }
