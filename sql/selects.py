@@ -213,7 +213,7 @@ def p_class(cn, teacher_i):
     students = []
     amount = len(rows)
     cl = rows[0][1]
-    teacher_i = row[0][4]
+    teacher_i = rows[0][4]
     for row in rows:
         temp = {
             'name': f"{row[2]} {row[3]}",
@@ -249,3 +249,5 @@ def student_parents(cn, student_id):
         }
         ans.append(temp)
     return ans
+
+

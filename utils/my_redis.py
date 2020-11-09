@@ -51,3 +51,7 @@ class RedisDB:
                 print("Redis._get_data: ", err, err[-1].tb_lineno)
         finally:
             return data
+
+
+r = RedisDB()
+print(r.read('+77000211021'))
