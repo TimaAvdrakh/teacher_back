@@ -15,6 +15,7 @@ async def auth(phone: str, jwt_token: Optional[str] = Header(None)):
     obj = {}
     obj['uid'] = 1
     obj['oid'] = 1
+
     ## TODO decode jwt and catch errors
     cn = selects.connect_database()
     rq = selects.teacher_org(cn, obj['oid'])
@@ -198,7 +199,7 @@ async def parents_of_student(student_i:int):
 
 
 @app.post('/notification/all_class/')
-async def all_class_notify(class_i: int = Body(default=None, embed=True),  message: str = Body(default='Some Message', embed=True)):
+async def all_class_notify(teacher_i: int = Body(default=None, embed=True),  message: str = Body(default='Some Message', embed=True)):
     cn = selects.connect_database()
     # data = selects.notify_class(cn, class_i, message)
     # class_name = selects.get_class_name
@@ -208,7 +209,7 @@ async def all_class_notify(class_i: int = Body(default=None, embed=True),  messa
     }
 
 
-@app.get('/notify/class_selected')
+@app.get('/notification/class_selected')
 async def notify_selected_students(students: List[int] = Body(default=[], embed=True), message: str = Body(default='None', embed=True)):
     cn = selects.connect_database()
     ## Todo send To selected students
@@ -219,10 +220,10 @@ async def notify_selected_students(students: List[int] = Body(default=[], embed=
 
 
 @app.post('/notification/parents')
-async def notify_class_parents(class_i: int = Body(None, embed=True), message: str = Body(None,embed=True)):
+async def notify_class_parents(teacher_i: int = Body(None, embed=True), message: str = Body(None,embed=True)):
     cn = selects.connect_database()
     # Todo send to all parents of the class
     selects.close_connection(cn)
     return {
-        "message": "Send to parents of class"
+        "message": "Send to parents of whole class"
     }

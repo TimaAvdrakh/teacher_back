@@ -197,7 +197,7 @@ def journal_task(cn, sch_i, dt):
 
 def p_class(cn, teacher_i):
     sql = (
-        f"select s.student_per_id,cl.lbl, p.first_name, p.last_name "
+        f"select s.student_per_id, cl.lbl, p.first_name, p.last_name,  cl.teacher_per_id "
         f"from person as p "
         f"inner join school_student as s "
         f"on student_per_id = person_i "
@@ -213,6 +213,7 @@ def p_class(cn, teacher_i):
     students = []
     amount = len(rows)
     cl = rows[0][1]
+    teacher_i = row[0][4]
     for row in rows:
         temp = {
             'name': f"{row[2]} {row[3]}",
@@ -223,6 +224,7 @@ def p_class(cn, teacher_i):
 
     return {
         'class': cl,
+        'teacher_i': teacher_i,
         'amount': amount,
         'students': students
     }
