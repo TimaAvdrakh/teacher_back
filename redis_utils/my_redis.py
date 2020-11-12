@@ -53,4 +53,4 @@ class RedisDB:
 
 
 r = RedisDB()
-print(r.get_data('+77000211021'))
+print(r.get_data('77000211021'))

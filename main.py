@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body, Header
+from fastapi import FastAPI, Body, Header, Request
 from sql import inserts, selects
 from utils.find_date import find_date
 import datetime
@@ -7,16 +7,66 @@ from typing import List, Optional
 from pydantic import BaseModel
 app = FastAPI()
 key = '1231234sda;nsdsajoi123'
+from redis_utils import my_redis
+
+
+def check_jwt(jwt, key):
+    try:
+        jwt.decode(jwt, key, algorithms=["HS256"])
+        print("JWT VALID")
+        return True
+    except jwt.exceptions.InvalidSignatureError or jwt.exceptions.ExpiredSignatureError:
+        print("JWT Error")
+        return False
+
+@app.middleware("http")
+async def check_auth(request: Request, call_next):
+    print("MIDDLEWARE")
+    print(request.headers)
+    response = await call_next(request)
+    return response
+
+@app.get("/auth1/")
+async def auth(phone: str, jwt_token: Optional[str] = None):
+    print(phone)
+    obj = {}
+    try:
+        r = my_redis.RedisDB()
+        data = r.read(phone)
+    except:
+        raise E
+
+    obj['uid'] = data['uid']
+    obj['oid'] = data['oid']
+    key = data['sk']
+    if check_jwt(jwt_token, data['sk']):
+    # jwt.decode(msg['jwt'], obj['sk'], algorithms=["HS256"])
+    #     obj['uid'] = 1
+    #     obj['oid'] = 1
+        ## TODO decode jwt and catch errors
+        cn = selects.connect_database()
+        r = selects.get_teacher_id(cn, data['uid'])
+        # rq = selects.teacher_org(cn, obj['oid'])
+        selects.close_connection(cn)
+
+        return {
+            'type': 'auth',
+            'uid': data['uid'],
+            'school': rq['school'],
+            'address': " Алматы д-14 кв-13",
+            't_id': r,
+        }
+    return {
+
+    }
 
 
 @app.get("/auth/")
-async def auth(phone: str, jwt_token: Optional[str] = Header(None)):
+async def auth(phone: str, jwt_token: Optional[str] = None):
     print(phone)
     obj = {}
     obj['uid'] = 1
     obj['oid'] = 1
-
-    ## TODO decode jwt and catch errors
     cn = selects.connect_database()
     rq = selects.teacher_org(cn, obj['oid'])
     selects.close_connection(cn)
@@ -29,9 +79,8 @@ async def auth(phone: str, jwt_token: Optional[str] = Header(None)):
         't_id': '19'
     }
 
-
 @app.get('/subjects/')
-async def subjects(t_id: int, date: str):
+async def subjects(t_id: int, date: str, jwt_token: Optional[str] = None):
     cn = selects.connect_database()
     date = [i for i in date.split(' ')]
     date = date[1]
@@ -46,7 +95,7 @@ async def subjects(t_id: int, date: str):
 
 
 @app.get('/classes/')
-async def classes(t_id: int, date: str, subject_i: int):
+async def classes(t_id: int, date: str, subject_i: int, jwt_token: Optional[str] = None):
     date = [i for i in date.split(' ')]
     date = date[1]
     time = find_date(date)
@@ -63,7 +112,7 @@ async def classes(t_id: int, date: str, subject_i: int):
 
 
 @app.get('/students/')
-async def root(class_id: int):
+async def root(class_id: int, jwt_token: Optional[str] = None):
     print("Students")
     cn = selects.connect_database()
     q = selects.all_class_students(cn, class_id)
@@ -76,7 +125,7 @@ async def root(class_id: int):
 
 
 @app.post('/attendance/', status_code=201)
-def attendance(students: List[Student], date: str , sch_i: int ):
+async def attendance(students: List[Student], date: str , sch_i: int, jwt_token: Optional[str]=None):
     print('Attendance')
     print(students)
     cn = selects.connect_database()
@@ -89,7 +138,7 @@ def attendance(students: List[Student], date: str , sch_i: int ):
 
 
 @app.post('/grade/', status_code=201)
-async def grades(sch_i: int, students: List[StudentGrade], dt: str):
+async def grades(sch_i: int, students: List[StudentGrade], dt: str, jwt_token: Optional[str] = None):
     print("grades")
     cn = selects.connect_database()
     q = inserts.grade(cn, students, sch_i, dt)
@@ -102,7 +151,7 @@ async def grades(sch_i: int, students: List[StudentGrade], dt: str):
 
 
 @app.post('/task/', status_code=201)
-async def tasks(sch_i: int,  dt: str, lbl : str = Body(default="Домашка", embed=True)):
+async def tasks(sch_i: int,  dt: str, jwt_token: Optional[str] = None, lbl: str = Body(default="Домашка", embed=True)):
     cn = selects.connect_database()
     q = inserts.task(cn, sch_i, lbl, dt)
     selects.close_connection(cn)
@@ -113,7 +162,7 @@ async def tasks(sch_i: int,  dt: str, lbl : str = Body(default="Домашка",
 
 
 @app.get('/task_date/', status_code=200)
-async def task_dates(teacher_i: int, class_i: int, subject_i: int, dt: str):
+async def task_dates(teacher_i: int, class_i: int, subject_i: int, dt: str, jwt_token: Optional[str] = None):
     print("print next 3 dates")
     cn = selects.connect_database()
     q = inserts.task_dates(cn, teacher_i, class_i, subject_i, dt)
@@ -146,7 +195,7 @@ async def week_dates(date: str):
 
 
 @app.get('/journal/', status_code=200)
-async def teacher_journal(teacher_i: int, date: str):
+async def teacher_journal(teacher_i: int, date: str, jwt_token: Optional[str]):
     print("Day Journal")
     cn = selects.connect_database()
     date = [i for i in date.split(' ')]
@@ -161,15 +210,13 @@ async def teacher_journal(teacher_i: int, date: str):
     for row in q:
         # sc.sch_i, sc.s_time, sub.lbl, cl.lbl
         query = selects.journal_task(cn, row[0], date)
-        hour = row[1].seconds//3600
-        minutes = row[1].seconds-hour
         temp = {
             "id": counter,
             "time": f"{row[1]}",
             "subject": row[2],
             "class": row[3],
             "homework": query,
-            "room": "Room 123"
+            "room": f"Кабинет №{row[4]}"
         }
 
         ans.append(temp)
@@ -181,7 +228,7 @@ async def teacher_journal(teacher_i: int, date: str):
 
 
 @app.get('/profile/class')
-async def teacher_class(teacher_i: int):
+async def teacher_class(teacher_i: int, jwt_token: Optional[str] = None):
     cn = selects.connect_database()
     data = selects.p_class(cn, teacher_i)
     selects.close_connection(cn)
@@ -189,7 +236,7 @@ async def teacher_class(teacher_i: int):
 
 
 @app.get('/profile/parents')
-async def parents_of_student(student_i:int):
+async def parents_of_student(student_i: int, jwt_token: Optional[str] = None):
     cn = selects.connect_database()
     data = selects.student_parents(cn, student_i)
     selects.close_connection(cn)
@@ -199,20 +246,24 @@ async def parents_of_student(student_i:int):
 
 
 @app.post('/notification/all_class/')
-async def all_class_notify(teacher_i: int = Body(default=None, embed=True),  message: str = Body(default='Some Message', embed=True)):
+async def all_class_notify(jwt_token: Optional[str] = None,
+                           class_i: int = Body(default=None, embed=True),
+                           message: str = Body(default='Important Message', embed=True)):
     cn = selects.connect_database()
-    # data = selects.notify_class(cn, class_i, message)
-    # class_name = selects.get_class_name
+    data = selects.class_students_id(cn, class_i, message)
     selects.close_connection(cn)
+
     return {
         "message": "Notification send to all class"
     }
 
 
-@app.get('/notification/class_selected')
-async def notify_selected_students(students: List[int] = Body(default=[], embed=True), message: str = Body(default='None', embed=True)):
+@app.post('/notification/class_selected')
+async def notify_selected_students(jwt_token: Optional[str] = None, students: List[int] = Body(default=[], embed=True), message: str = Body(default='None', embed=True)):
     cn = selects.connect_database()
     ## Todo send To selected students
+    for student_i in students:
+        selects.student_log_notification(cn, student_i, message)
     selects.close_connection(cn)
     return {
         "message": "Notification send"
@@ -220,10 +271,11 @@ async def notify_selected_students(students: List[int] = Body(default=[], embed=
 
 
 @app.post('/notification/parents')
-async def notify_class_parents(teacher_i: int = Body(None, embed=True), message: str = Body(None,embed=True)):
+async def notify_class_parents(jwt_token: Optional[str] = None, teacher_i: int = Body(None, embed=True),  message: str = Body(None,embed=True)):
     cn = selects.connect_database()
-    # Todo send to all parents of the class
+    ## Todo send to all parents of the class
     selects.close_connection(cn)
     return {
         "message": "Send to parents of whole class"
     }
+

@@ -163,3 +163,17 @@ def task_dates(cn, teacher_i,class_i,subject_i, dt):
     return {
         'date': ans
     }
+
+def student_log_notification(cn, student_i, message):
+    cr = cn.cursor()
+    sql = (
+        f"insert into school_log "
+        f"(student_i, e_typ, e_detail) "
+        f"values ({student_i}, 'Cooбщение от учителя', {message}); "
+    )
+    cr.execute(sql)
+    cn.commit()
+
+    return {
+        "detail": "message send to student"
+    }

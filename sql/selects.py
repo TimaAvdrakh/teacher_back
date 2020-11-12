@@ -24,10 +24,35 @@ def close_connection(con):
     con.close()
 
 
+def get_teacher_id(cn, uuid):
+    cr = cn.cursor()
+    print("Selecting teacher Id")
+    sql = (
+        f"select teacher_per_id "
+        f"from school_teacher "
+        f"where uuid={uuid};"
+    )
+    cr.execute(sql)
+    row = cr.fetchone()
+    # print(row)
+    return row[0]
+
+def teacher_org_address(cn, org_id):
+    cr = cn.cursor()
+    print("selecting organizaton address")
+
+    sql = (
+        f"select addr_note "
+        f"from org_addr "
+        f"where org_i = {org_id};"
+    )
+    cr.execute(sql)
+    row = cr.fetchone()
+    return row[0]
 
 def teacher_org(cn, org_id):
     cr = cn.cursor()
-    print('Selecting teacher')
+    print('Selecting teacher organization')
 
     sql = (
         f"select lbl "
@@ -151,7 +176,7 @@ def all_class_students(cn, class_id):
 
 def teacher_journal(cn,teacher_i, time):
     sql = (
-        f"select sc.sch_i, sc.s_time, sub.lbl, cl.lbl "
+        f"select sc.sch_i, sc.s_time, sub.lbl, cl.lbl, sc.room "
         f"from school_schedule sc "
         f"inner join school_subject sub "
         f"on sc.subject_i = sub.subject_i "
@@ -161,17 +186,6 @@ def teacher_journal(cn,teacher_i, time):
         f"order by sc.s_time;"
     )
     print(sql)
-
-    sqlfake = (
-        f"select sc.s_time, sub.lbl, cl.lbl, sc.kab  "
-        f"from school_schedule sc "
-        f"inner join school_subject sub "
-        f"on sc.subject_i = sub.subject_i "
-        f"inner join school_class cl "
-        f"on sc.class_i = cl.class_id "
-        f"where sc.teacher_i = {teacher_i} and s_week={time} "
-        f"order by sc.s_time;"
-    )
     cr = cn.cursor()
     print("Journal")
     cr.execute(sql)
@@ -197,7 +211,7 @@ def journal_task(cn, sch_i, dt):
 
 def p_class(cn, teacher_i):
     sql = (
-        f"select s.student_per_id, cl.lbl, p.first_name, p.last_name,  cl.teacher_per_id "
+        f"select s.student_per_id, cl.lbl, p.first_name, p.last_name,  cl.teacher_per_id , cl.class_id "
         f"from person as p "
         f"inner join school_student as s "
         f"on student_per_id = person_i "
@@ -213,6 +227,7 @@ def p_class(cn, teacher_i):
     students = []
     amount = len(rows)
     cl = rows[0][1]
+    cl_i = rows[0][5]
     teacher_i = rows[0][4]
     for row in rows:
         temp = {
@@ -225,6 +240,7 @@ def p_class(cn, teacher_i):
     return {
         'class': cl,
         'teacher_i': teacher_i,
+        'class_id': cl_i,
         'amount': amount,
         'students': students
     }
@@ -251,3 +267,31 @@ def student_parents(cn, student_id):
     return ans
 
 
+def class_students_id(cn, class_id, message):
+    sql = (
+        f"select student_per_id "
+        f"from person as p "
+        f"inner join school_student as s "
+        f"on student_per_id = person_i "
+        f"where class_id = {class_id}; "
+    )
+
+    cr = cn.cursor()
+    cr.execute(sql)
+    rows = cr.fetchall()
+
+    for row in rows:
+        print(row[0])
+        sql1 = (
+            f"insert into school_log "
+            f"(student_i, e_typ, e_detail) "
+            f"values ({row[0]}, 'Важное сообщение', {message}); "
+        )
+
+        cr.execute(sql1)
+        cr.commit()
+        print(sql1)
+
+    return {
+        "Notification_send"
+    }
