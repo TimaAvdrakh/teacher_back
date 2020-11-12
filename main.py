@@ -29,7 +29,7 @@ async def check_auth(request: Request, call_next):
 
 
 @app.get("/auth1/")
-async def auth(phone: str, jwt_token: Optional[str] = None, : bool = False):
+async def auth(phone: str, jwt_token: Optional[str] = None, debug: bool = False):
     obj = {}
     if debug:
         try:
