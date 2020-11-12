@@ -1,63 +1,61 @@
-from fastapi import FastAPI, Body, Header, Request
+from fastapi import FastAPI, Body, Header, Request, BackgroundTasks, HTTPException
 from sql import inserts, selects
 from utils.find_date import find_date
 import datetime
 from schemas.schemas import Student, StudentGrade
 from typing import List, Optional
 from pydantic import BaseModel
-app = FastAPI()
-key = '1231234sda;nsdsajoi123'
+import jwt
 from redis_utils import my_redis
 
+app = FastAPI()
 
-def check_jwt(jwt, key):
-    try:
-        jwt.decode(jwt, key, algorithms=["HS256"])
-        print("JWT VALID")
-        return True
-    except jwt.exceptions.InvalidSignatureError or jwt.exceptions.ExpiredSignatureError:
-        print("JWT Error")
-        return False
+# def check_jwt(jwt, key):
+#     try:
+#         jwt.decode(jwt, key, algorithms=["HS256"])
+#         print("JWT VALID")
+#         return True
+#     except jwt.exceptions.InvalidSignatureError or jwt.exceptions.ExpiredSignatureError:
+#         print("JWT Error")
+#         raise jwt.exceptions.ExpiredSignatureError
+
 
 @app.middleware("http")
 async def check_auth(request: Request, call_next):
     print("MIDDLEWARE")
-    print(request.headers)
+    print(dir(request.url))
     response = await call_next(request)
     return response
 
+
 @app.get("/auth1/")
-async def auth(phone: str, jwt_token: Optional[str] = None):
-    print(phone)
+async def auth(phone: str, jwt_token: Optional[str] = None, : bool = False):
     obj = {}
-    try:
-        r = my_redis.RedisDB()
-        data = r.read(phone)
-    except:
-        raise E
+    if debug:
+        try:
+            r = my_redis.RedisDB()
+            data = r.read(phone)
+            obj['uid'] = data['uid']
+            obj['oid'] = data['oid']
+            jwt.decode(jwt, key, algorithms=["HS256"])
+        except jwt.exceptions.InvalidSignatureError or jwt.exceptions.ExpiredSignatureError:
+            print("JWT Error")
+            raise jwt.exceptions.ExpiredSignatureError
+    else:
+        obj['uid'] = 111
+        obj['oid'] = 1
 
-    obj['uid'] = data['uid']
-    obj['oid'] = data['oid']
-    key = data['sk']
-    if check_jwt(jwt_token, data['sk']):
-    # jwt.decode(msg['jwt'], obj['sk'], algorithms=["HS256"])
-    #     obj['uid'] = 1
-    #     obj['oid'] = 1
-        ## TODO decode jwt and catch errors
-        cn = selects.connect_database()
-        r = selects.get_teacher_id(cn, data['uid'])
-        # rq = selects.teacher_org(cn, obj['oid'])
-        selects.close_connection(cn)
-
-        return {
-            'type': 'auth',
-            'uid': data['uid'],
-            'school': rq['school'],
-            'address': " Алматы д-14 кв-13",
-            't_id': r,
-        }
+    cn = selects.connect_database()
+    rq = selects.teacher_org(cn, obj['oid'])
+    t_id = selects.get_teacher_id(obj['uid'])
+    selects.close_connection(cn)
     return {
-
+        'type': 'auth',
+        'uid': obj['uid'],
+        'school': rq['school'],
+        'address': rq['address'],
+        't_id': t_id[0],
+        'key': 'fakefakefakefakefakefake'
     }
 
 
@@ -65,18 +63,27 @@ async def auth(phone: str, jwt_token: Optional[str] = None):
 async def auth(phone: str, jwt_token: Optional[str] = None):
     print(phone)
     obj = {}
-    obj['uid'] = 1
+    obj['uid'] = 111
     obj['oid'] = 1
+    obj['ti'] = 19
     cn = selects.connect_database()
     rq = selects.teacher_org(cn, obj['oid'])
+    print(rq)
+    t_id = selects.get_teacher_id(obj['uid'])
     selects.close_connection(cn)
-
+    print({
+        'type': 'auth',
+        'uid': obj['uid'],
+        'school': rq['school'],
+        'address': rq['address'],
+        't_id': t_id[0]
+    })
     return {
         'type': 'auth',
         'uid': obj['uid'],
         'school': rq['school'],
-        'address': " Алматы д-14 кв-13",
-        't_id': '19'
+        'address': rq['address'],
+        't_id': t_id[0]
     }
 
 @app.get('/subjects/')
@@ -249,8 +256,9 @@ async def parents_of_student(student_i: int, jwt_token: Optional[str] = None):
 async def all_class_notify(jwt_token: Optional[str] = None,
                            class_i: int = Body(default=None, embed=True),
                            message: str = Body(default='Important Message', embed=True)):
+
     cn = selects.connect_database()
-    data = selects.class_students_id(cn, class_i, message)
+    selects.class_students_id(cn, class_i, message)
     selects.close_connection(cn)
 
     return {
@@ -262,16 +270,20 @@ async def all_class_notify(jwt_token: Optional[str] = None,
 async def notify_selected_students(jwt_token: Optional[str] = None, students: List[int] = Body(default=[], embed=True), message: str = Body(default='None', embed=True)):
     cn = selects.connect_database()
     ## Todo send To selected students
+
     for student_i in students:
-        selects.student_log_notification(cn, student_i, message)
+        inserts.student_log_notification(cn, student_i, message)
     selects.close_connection(cn)
     return {
+
         "message": "Notification send"
     }
 
 
-@app.post('/notification/parents')
-async def notify_class_parents(jwt_token: Optional[str] = None, teacher_i: int = Body(None, embed=True),  message: str = Body(None,embed=True)):
+@app.post('/notification/parents/')
+async def notify_class_parents(jwt_token: Optional[str] = None,
+                               teacher_i: int = Body(None, embed=True),
+                               message: str = Body(None,embed=True)):
     cn = selects.connect_database()
     ## Todo send to all parents of the class
     selects.close_connection(cn)
@@ -279,3 +291,13 @@ async def notify_class_parents(jwt_token: Optional[str] = None, teacher_i: int =
         "message": "Send to parents of whole class"
     }
 
+
+@app.post('/finaclass/')
+async def get_class_final(jwt_token: Optional[str] = None,
+                          students: List[int] = Body(embed=True,default = []),
+                          subject_i: int = Body(default=-1, embed =True)):
+    data = selects.get_data_final(students, subject_i)
+
+    return {
+        'data': data
+    }

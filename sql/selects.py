@@ -53,19 +53,39 @@ def teacher_org_address(cn, org_id):
 def teacher_org(cn, org_id):
     cr = cn.cursor()
     print('Selecting teacher organization')
-
     sql = (
-        f"select lbl "
-        f"from org "
-        f"where org_i = {org_id};"
+        f"select o.lbl , oa.addr_note "
+        f"from org as o "
+        f"inner join org_addr as oa "
+        f"on o.org_i= oa.org_i "
+        f"where o.org_i = {org_id};"
     )
+    print(sql)
     cr.execute(sql)
     # print(cr.statement)
     row = cr.fetchone()
-    print(row[0])
+    print(row)
     return {
-        'school': row[0]
+        'school': row[0],
+        'address': row[1]
     }
+
+def get_teacher_id(uuid):
+    # print(uuid)
+    cn = connect_database()
+
+    sql = (
+        f"select teacher_per_id "
+        f"from school_teacher "
+        f"where uuid = '{uuid}';"
+    )
+    cr = cn.cursor()
+    cr.execute(sql)
+    ans = cr.fetchone()
+    close_connection(cn)
+
+    return ans
+
 
 def teacher_subjects(cn, teacher_id, time):
     # select
@@ -151,9 +171,10 @@ def all_class_students(cn, class_id):
         f"select student_per_id, first_name, last_name "
         f"from person as p "
         f"inner join school_student as s "
-        f"on student_per_id = person_i "
+        f"on s.student_per_id = p.person_i "
         f"where class_id = {class_id}; "
     )
+
     cr.execute(sql)
     ans = []
     rows = cr.fetchall()
@@ -209,6 +230,7 @@ def journal_task(cn, sch_i, dt):
         return homework
     return "No homework"
 
+
 def p_class(cn, teacher_i):
     sql = (
         f"select s.student_per_id, cl.lbl, p.first_name, p.last_name,  cl.teacher_per_id , cl.class_id "
@@ -245,6 +267,7 @@ def p_class(cn, teacher_i):
         'students': students
     }
 
+
 def student_parents(cn, student_id):
     sql = (
         f"select p.first_name, p.last_name "
@@ -272,26 +295,51 @@ def class_students_id(cn, class_id, message):
         f"select student_per_id "
         f"from person as p "
         f"inner join school_student as s "
-        f"on student_per_id = person_i "
+        f"on s.student_per_id = p.person_i "
         f"where class_id = {class_id}; "
     )
 
     cr = cn.cursor()
     cr.execute(sql)
     rows = cr.fetchall()
+    print(rows)
+
+    m = "Важное сообщение"
 
     for row in rows:
         print(row[0])
         sql1 = (
             f"insert into school_log "
             f"(student_i, e_typ, e_detail) "
-            f"values ({row[0]}, 'Важное сообщение', {message}); "
+            f"values ({row[0]}, '{m}' , '{message}'); "
         )
-
+        print(sql)
         cr.execute(sql1)
-        cr.commit()
+        cn.commit()
         print(sql1)
-
     return {
         "Notification_send"
     }
+
+def get_data_final(students, subject_i):
+    cn = connect_database()
+    ans = []
+    for student in students:
+        sql = (
+            f"select first_frth, secnd_frth, thrd_frth, frth_frth "
+            f"from school_final "
+            f"where student_i = {student} and subject_i = {subject_i};"
+        )
+        cr = cn.cursor()
+        cr.execute(sql)
+        row = cr.fetchone()
+        part = ['first', 'second', 'third', 'fourth']
+        if row:
+            temp = dict(zip(part, list(row)))
+        else:
+            temp = dict(zip(part, [0, 0, 0, 0]))
+
+        ans.append(temp)
+    close_connection(cn)
+
+    return ans
