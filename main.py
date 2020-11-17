@@ -33,11 +33,14 @@ async def auth(phone: str, jwt_token: Optional[str] = None, debug: bool = False)
     obj = {}
     if debug:
         try:
-            # r = my_redis.RedisDB()
+            r = my_redis.RedisDB()
             data = r.read(phone)
+            print(data)
+            # if data:
             obj['uid'] = data['uid']
             obj['oid'] = data['oid']
             obj['sk'] = data['sk']
+
             jwt.decode(jwt, data['sk'], algorithms=["HS256"])
         except jwt.exceptions.InvalidSignatureError or jwt.exceptions.ExpiredSignatureError:
             print("JWT Error")
