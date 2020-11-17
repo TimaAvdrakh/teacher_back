@@ -37,8 +37,8 @@ async def auth(phone: str, jwt_token: Optional[str] = None, debug: bool = False)
             data = r.read(phone)
             obj['uid'] = data['uid']
             obj['oid'] = data['oid']
-            jwt.decode(jwt, key, algorithms=["HS256"])
-        except jwt.exceptions.InvalidSignatureError or jwt.exceptions.ExpiredSignatureError:
+            jwt.decode(jwt, data['sk'], algorithms=["HS256"])
+        except jwt.token or jwt.ExpiredSignatureError:
             print("JWT Error")
             raise jwt.exceptions.ExpiredSignatureError
     else:

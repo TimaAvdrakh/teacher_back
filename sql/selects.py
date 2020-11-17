@@ -8,9 +8,9 @@ def connect_database():
         con = mariadb.connect(
             user="admin",
             password="adm2016@=",
-            host="nst.usmcontrol.com",
-            db='odm',
-            port=6033
+            host="10.10.20.50",
+            database='odm',
+            port=3306
             # host = "nst.usmcontrol.com",
             #host ="10.10.20.50
             #port = 3306
