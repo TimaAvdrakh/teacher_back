@@ -27,6 +27,10 @@ async def check_auth(request: Request, call_next):
     response = await call_next(request)
     return response
 
+@app.get('/checkredis')
+async def check(phone:str, ):
+    r = my_redis.RedisDB()
+    return r.read(phone)
 
 @app.get("/auth1/")
 async def auth(phone: str, jwt_token: Optional[str] = None, debug: bool = False):
