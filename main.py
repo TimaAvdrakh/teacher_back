@@ -37,6 +37,7 @@ async def auth(phone: str, jwt_token: Optional[str] = None, debug: bool = False)
             data = r.read(phone)
             obj['uid'] = data['uid']
             obj['oid'] = data['oid']
+            obj['sk'] = date['sk']
             jwt.decode(jwt, data['sk'], algorithms=["HS256"])
         except jwt.InvalidTokenError or jwt.ExpiredSignatureError or jwt.DecodeError:
             print("JWT Error")
@@ -44,6 +45,7 @@ async def auth(phone: str, jwt_token: Optional[str] = None, debug: bool = False)
     else:
         obj['uid'] = 111
         obj['oid'] = 1
+        obj['sk'] = 'fakefakefake'
 
     cn = selects.connect_database()
     rq = selects.teacher_org(cn, obj['oid'])
@@ -55,7 +57,7 @@ async def auth(phone: str, jwt_token: Optional[str] = None, debug: bool = False)
         'school': rq['school'],
         'address': rq['address'],
         't_id': str(t_id[0]),
-        'key': 'fakefakefakefakefakefake'
+        'key': obj['sk']
     }
 
 
