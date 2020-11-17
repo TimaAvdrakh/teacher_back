@@ -9,7 +9,7 @@ import jwt
 from redis_utils import my_redis
 
 app = FastAPI()
-
+key = 'asadfasdkfjasdif[jasdifasd[oij'
 # def check_jwt(jwt, key):
 #     try:
 #         jwt.decode(jwt, key, algorithms=["HS256"])
@@ -54,7 +54,7 @@ async def auth(phone: str, jwt_token: Optional[str] = None, debug: bool = False)
         'uid': obj['uid'],
         'school': rq['school'],
         'address': rq['address'],
-        't_id': t_id[0],
+        't_id': str(t_id[0]),
         'key': 'fakefakefakefakefakefake'
     }
 
@@ -83,7 +83,8 @@ async def auth(phone: str, jwt_token: Optional[str] = None):
         'uid': obj['uid'],
         'school': rq['school'],
         'address': rq['address'],
-        't_id': t_id[0]
+        't_id': str(t_id[0]),
+        'key': key
     }
 
 @app.get('/subjects/')
@@ -130,6 +131,12 @@ async def root(class_id: int, jwt_token: Optional[str] = None):
         'students': q['data']
     }
 
+@app.get('/students/test/')
+async def get(class_id:int , subject_i:int, jwt_token: Optional[str] = None):
+    print("ALL STUDENT DATA")
+    q = selects.all_class_with_final(class_id, subject_i)
+
+    return q
 
 @app.post('/attendance/', status_code=201)
 async def attendance(students: List[Student], date: str , sch_i: int, jwt_token: Optional[str]=None):

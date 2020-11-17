@@ -194,8 +194,63 @@ def all_class_students(cn, class_id):
         'data': ans
     }
 
+def all_class_with_final(class_i, subject_i):
+    cn = connect_database()
 
-def teacher_journal(cn,teacher_i, time):
+    ar = [f"nvl(sf.{num}_{var},0)" for num in ['first', 'second', 'third', 'forth'] for var in
+          ['sor1', 'sor2', 'sor3', 'soch', 'final']]
+
+    temp = ", ".join(ar)
+    sql = (
+        f"select student_per_id, first_name, last_name,  {temp} , nvl(sf.final_grade, 0) "
+        f"from person as p "
+        f"inner join school_student as s "
+        f"on s.student_per_id = p.person_i "
+        f"left join school_final sf "
+        f"on student_per_id = student_i and subject_i = {subject_i} "
+        f"where class_id = {class_i}; "
+    )
+    cr = cn.cursor()
+    cr.execute(sql)
+    rows = cr.fetchall()
+    ans = []
+    for row in rows:
+        temp = {
+            'student_per_id': row[0],
+            'last_name': row[1],
+            'first_name': row[2],
+            'grade': 0,
+            'attendance': True,
+            'first_sor1': row[3],
+            'first_sor2': row[4],
+            'first_sor3': row[5],
+            'first_soch': row[6],
+            'first_final': row[7],
+            'second_sor1': row[8],
+            'second_sor2': row[9],
+            'second_sor3': row[10],
+            'second_soch': row[11],
+            'second_final': row[12],
+            'third_sor1': row[13],
+            'third_sor2': row[14],
+            'third_sor3': row[15],
+            'third_soch': row[16],
+            'third_final': row[17],
+            'forth_sor1': row[18],
+            'forth_sor2': row[19],
+            'forth_sor3': row[20],
+            'forth_soch': row[21],
+            'forth_final': row[22],
+            'final_grade': row[23]
+        }
+        ans.append(temp)
+    print(ans)
+    close_connection(cn)
+
+    return {
+        'data': ans
+    }
+def teacher_journal(cn, teacher_i, time):
     sql = (
         f"select sc.sch_i, sc.s_time, sub.lbl, cl.lbl, sc.room "
         f"from school_schedule sc "
