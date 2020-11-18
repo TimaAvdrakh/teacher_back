@@ -4,7 +4,7 @@ token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNlaXNlbWJheWV2Ii
 import jwt
 
 try:
-    jwt.decode(token, key, algorithms=["HS256"])
+    jwt.encode(token, key, algorithms=["HS256"])
 except:
     print("invalid token")
 

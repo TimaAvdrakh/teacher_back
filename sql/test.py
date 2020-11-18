@@ -13,4 +13,4 @@ import jwt
 #         f"where o.org_i = {org_id};"
 
 
-print(dir(jwt.exceptions))
+print(dir(jwt.decode.__code__.co_varnames))

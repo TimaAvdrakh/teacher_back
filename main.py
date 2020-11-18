@@ -48,8 +48,8 @@ async def auth(phone: str, jwt_token: Optional[str] = None, debug: Optional[bool
         obj['sk'] = data['sk']
 
         try:
-            jwt.decode(jwt, data['sk'], algorithms=["HS256"])
-        except Exceeption as e:
+            jwt.encode(jwt_token, data['sk'], algorithms=["HS256"] ,)
+        except Exception as e:
 
             print("JWT Error", e)
             raise HTTPException(status_code=400, detail="Authentication Failed JWT ERROR")
@@ -312,12 +312,20 @@ async def notify_class_parents(jwt_token: Optional[str] = None,
     }
 
 
-@app.post('/finaclass/')
-async def get_class_final(jwt_token: Optional[str] = None,
-                          students: List[int] = Body(embed=True,default = []),
-                          subject_i: int = Body(default=-1, embed =True)):
-    data = selects.get_data_final(students, subject_i)
+# @app.post('/finaclass/')
+# async def get_class_final(jwt_token: Optional[str] = None,
+#                           students: List[int] = Body(embed=True,default = []),
+#                           subject_i: int = Body(default=-1, embed =True)):
+#     data = selects.get_data_final(students, subject_i)
+#
+#     return {
+#         'data': data
+#     }
 
-    return {
-        'data': data
-    }
+@app.post('/accessments/')
+async def intert_accessment(student_i: int = Body(None, embed=True),
+                            subject_i: int = Body(None, embed=True),
+                            name: int = Body(None, embed=True),
+                            grade: int = Body(None, embed=True)):
+
+    pass
