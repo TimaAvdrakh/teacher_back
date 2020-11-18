@@ -54,7 +54,7 @@ async def auth(phone: str, jwt_token: Optional[str] = None, debug: Optional[bool
             print("JWT Error", e)
             raise HTTPException(status_code=400, detail="Authentication Failed JWT ERROR")
     else:
-        obj['uid'] = 111
+        obj['uid'] = 780
         obj['oid'] = 1
         obj['sk'] = 'fakefakefake'
 
