@@ -2,6 +2,7 @@ import pymysql
 # _mysql = pymysql.install_as_MySQLdb()
 import mariadb
 import sys
+import datetime
 
 def connect_database():
     try:
@@ -9,11 +10,11 @@ def connect_database():
             user="admin",
             password="adm2016@=",
             host="10.10.20.50",
+            # port=6033,
             database='odm',
-            port=3306
+            # port=3306
             # host = "nst.usmcontrol.com",
-            #host ="10.10.20.50
-            #port = 3306
+            port=3306
         )
     except mariadb.Error as e:
         print(f"Error connecting to MariaDB Platform: {e}")
@@ -398,3 +399,5 @@ def get_data_final(students, subject_i):
     close_connection(cn)
 
     return ans
+
+

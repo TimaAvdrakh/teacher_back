@@ -2,21 +2,23 @@ import pymysql
 from datetime import datetime, timedelta
 import datetime as dtm
 import mariadb
-from utils.reformat import reformat_date
-# _mysql = pymysql.install_as_MySQLdb()
 
+# _mysql = pymysql.install_as_MySQLdb()
+def reformat_date(str):
+    "from 20-10-25 to 25/10/20"
+    year , month, day = [i for i in str.split('-')]
+    return f"{day}/{month}/{year}"
 
 def connect_database():
     try:
         con = mariadb.connect(
             user="admin",
             password="adm2016@=",
-            host="nst.usmcontrol.com",
+            # host="nst.usmcontrol.com",
             db='odm',
-            port=6033
-            # host = "nst.usmcontrol.com",
-            #host ="10.10.20.50
-            #port = 3306
+            # port=6033
+            host="10.10.20.50",
+            port=3306
         )
     except mariadb.Error as e:
         print(f"Error connecting to MariaDB Platform: {e}")
@@ -177,4 +179,153 @@ def student_log_notification(cn, student_i, message):
 
     return {
         "detail": "message send to student"
+    }
+
+
+def class_notify(class_i, teacher_i, message):
+    cn = connect_database()
+    cr = cn.cursor()
+    # print(datetime.now
+    dt = datetime.now()
+    print(dt)
+    print(dt)
+    year = dt.year
+    sql = (
+        f"insert into school_announcement "
+        f"(class_i, teacher_i, lbl, c_dt, c_year, own_i) "
+        f"values ({class_i}, {teacher_i}, '{message}' , '{dt}' , '{year}', 1);"
+    )
+    print(sql)
+    cr.execute(sql)
+    cn.commit()
+    close_connection(cn)
+
+dates = {
+    'first': {
+        "start": 1,
+        "end": 1
+    },
+    'second': {
+        "start": 1,
+        "end": 1.
+    },
+    'third': {
+        "start": 1,
+        "end": 1
+    },
+    'forth': {
+        "start": 1,
+        "end": 1
+    },
+}
+
+def accessment(student_i, subject_i, lbl, grade):
+    cn = connect_database()
+    cr = cn.cursor()
+    time = datetime.now()
+    c_y = time.year
+    # TODO CHANGE IFS IN CODE
+    # if lebel == 'forth_soch':
+    #     # ToDO calculate Final
+    #     #calculate and add forth and final
+    #     #calculate final
+    #     ff =
+    #     sql2 = (
+    #         f"update school_final "
+    #         f"set final_grade = {fg} , final_forth = {ff}"
+    #         f"where subject_i = {subject_i} "
+    #         f"and student_i={subject_i} and "
+    #         f"year = {c_y};"
+    #     )
+
+    if lbl.split('_')[-1] == 'soch':
+        print("SOCH BITCH")
+        # checker if data if full or none
+        name = lbl.split('_')[0]
+        sors = ['sor1', 'sor2', 'sor3', 'soch']
+
+        sors_new = list(map(lambda x: f"{name}_{x}", sors))
+
+        s = ', '.join(sors_new)
+
+        sql0 = (
+            f"insert into school_final "
+            f"(student_i, subject_i, {lbl} , c_year,  own_i) "
+            f"values "
+            f"({student_i}, {subject_i}, {grade}, {c_y}, 1) "
+            f"on duplicate key update "
+            f"{lbl} = {grade};"
+        )
+        cr.execute(sql0)
+        cn.commit()
+
+
+        sql1 = (
+            f"select {s} from school_final "
+            f"where subject_i = {subject_i} "
+            f"and student_i = {student_i} "
+            f"and c_year = '{c_y}';"
+        )
+        print(sql1)
+        cr.execute(sql1)
+        row = cr.fetchone()
+        print(row)
+        sum_of_all_class_bals = 70
+        sem_final = f"{name}_final"
+        # row = rows[0]
+        sem_final_val = ((row[0] + row[1] + row[2] + sum_of_all_class_bals )/ 8 ) + (row[3] * 0.5)
+
+        sql_final = (
+            f"update school_final "
+            f"set {sem_final} = {sem_final_val} "
+            f"where subject_i = {subject_i} "
+            f"and student_i = {student_i} and c_year = {c_y};"
+        )
+        print(sql_final)
+        cr.execute(sql_final)
+        cn.commit()
+
+        if name == 'forth':
+            ar = ['first', 'second', 'third', 'forth']
+            ar = list(map(lambda x: f"{x}_final", ar))
+            far = ', '.join(ar)
+            sql2 = (
+                f"select {far} from school_final "
+                f"where subject_i = {subject_i} and student_i = {student_i} and c_year = {c_y};"
+            )
+            cr = cn.cursor()
+            cr.execute(sql2)
+            row = cr.fetchone()
+            fg = row[0] + row[1] + row[2] + row[3]
+            fg = fg/4
+
+            sql3 = (
+                f"update school_final "
+                f"set final_grade = {fg} "
+                f"where subject_i = {subject_i} and student_i = {student_i} and c_year = {c_y};"
+            )
+            cr.execute(sql3)
+            cn.commit()
+
+        return {
+            'detail': 'semester_final ready'
+        }
+    else:
+        print("ITS SOR")
+        sql = (
+            f"insert into school_final "
+            f"(student_i, subject_i, {lbl} , c_year,  own_i) "
+            f"values "
+            f"({student_i}, {subject_i}, {grade}, {c_y}, 1) "
+            f"on duplicate key update "
+            f"{lbl} = {grade};"
+        )
+        print(sql)
+        cr.execute(sql)
+        cn.commit()
+
+    close_connection(cn)
+
+    return {
+        'detail': 'Grades Updated'
     }

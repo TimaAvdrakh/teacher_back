@@ -60,7 +60,7 @@ async def auth(phone: str, jwt_token: Optional[str] = None, debug: Optional[bool
 
     cn = selects.connect_database()
     rq = selects.teacher_org(cn, obj['oid'])
-    t_id = selects.get_teacher_id(111)
+    t_id = selects.get_teacher_id(111)  ## TODO change to obj['uid']
     print(t_id)
     selects.close_connection(cn)
     return {
@@ -276,12 +276,11 @@ async def parents_of_student(student_i: int, jwt_token: Optional[str] = None):
 
 @app.post('/notification/all_class/')
 async def all_class_notify(jwt_token: Optional[str] = None,
+                           teacher_i: int = Body(default=None, embed=True),
                            class_i: int = Body(default=None, embed=True),
                            message: str = Body(default='Important Message', embed=True)):
 
-    cn = selects.connect_database()
-    selects.class_students_id(cn, class_i, message)
-    selects.close_connection(cn)
+    inserts.class_notify(class_i, teacher_i, message)
 
     return {
         "message": "Notification send to all class"
@@ -302,16 +301,16 @@ async def notify_selected_students(jwt_token: Optional[str] = None, students: Li
     }
 
 
-@app.post('/notification/parents/')
-async def notify_class_parents(jwt_token: Optional[str] = None,
-                               teacher_i: int = Body(None, embed=True),
-                               message: str = Body(None,embed=True)):
-    cn = selects.connect_database()
-    ## Todo send to all parents of the class
-    selects.close_connection(cn)
-    return {
-        "message": "Send to parents of whole class"
-    }
+# @app.post('/notification/parents/')
+# async def notify_class_parents(jwt_token: Optional[str] = None,
+#                                teacher_i: int = Body(None, embed=True),
+#                                message: str = Body(None,embed=True)):
+#     cn = selects.connect_database()
+#     ## Todo send to all parents of the class
+#     selects.close_connection(cn)
+#     return {
+#         "message": "Send to parents of whole class"
+#     }
 
 
 # @app.post('/finaclass/')
@@ -325,9 +324,14 @@ async def notify_class_parents(jwt_token: Optional[str] = None,
 #     }
 
 @app.post('/accessments/')
-async def intert_accessment(student_i: int = Body(None, embed=True),
+async def insert_accessment(student_i: int = Body(None, embed=True),
                             subject_i: int = Body(None, embed=True),
-                            name: int = Body(None, embed=True),
+                            lbl: str = Body(None, embed=True),
                             grade: int = Body(None, embed=True)):
 
-    pass
+    inserts.accessment(student_i, subject_i, lbl, grade)
+
+    return {
+        'message': "Data is terminated to database"
+    }
+
