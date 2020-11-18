@@ -39,19 +39,19 @@ async def check(phone: str):
 async def auth(phone: str, jwt_token: Optional[str] = None, debug: Optional[bool] = False):
     obj = {}
     if debug:
+
+        r = my_redis.RedisDB()
+        data = r.read(phone)
+        # if data:
+        obj['uid'] = data['uid']
+        obj['oid'] = data['oid']
+        obj['sk'] = data['sk']
+
         try:
-            r = my_redis.RedisDB()
-            data = r.read(phone)
-
-            print("data:", data)
-            # if data:
-            obj['uid'] = data['uid']
-            obj['oid'] = data['oid']
-            obj['sk'] = data['sk']
-
             jwt.decode(jwt, data['sk'], algorithms=["HS256"])
-        except:
-            print("JWT Error")
+        except Exceeption as e:
+
+            print("JWT Error", e)
             raise HTTPException(status_code=400, detail="Authentication Failed JWT ERROR")
     else:
         obj['uid'] = 111
