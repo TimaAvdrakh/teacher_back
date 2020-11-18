@@ -52,5 +52,5 @@ class RedisDB:
             return data
 
 
-r = RedisDB()
-print(r.get_data('77000211021'))
+# r = RedisDB()
+# print(r.read('77000211021'))

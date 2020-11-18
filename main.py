@@ -28,10 +28,12 @@ async def check_auth(request: Request, call_next):
     response = await call_next(request)
     return response
 
+
 @app.get('/checkredis')
-async def check(phone:str, ):
+async def check(phone: str):
     r = my_redis.RedisDB()
     return r.read(phone)
+
 
 @app.get("/auth1/")
 async def auth(phone: str, jwt_token: Optional[str] = None, debug: Optional[bool] = False):
@@ -40,7 +42,8 @@ async def auth(phone: str, jwt_token: Optional[str] = None, debug: Optional[bool
         try:
             r = my_redis.RedisDB()
             data = r.read(phone)
-            print(data)
+
+            print("data:", data)
             # if data:
             obj['uid'] = data['uid']
             obj['oid'] = data['oid']
