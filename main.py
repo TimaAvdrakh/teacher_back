@@ -48,7 +48,7 @@ async def auth(phone: str, jwt_token: Optional[str] = None, debug: Optional[bool
         obj['sk'] = data['sk']
 
         try:
-            jwt.encode(jwt_token, data['sk'], algorithm="HS256")
+            jwt.decode(jwt_token, data['sk'], algorithm="HS256" )
         except Exception as e:
 
             print("JWT Error", e)
