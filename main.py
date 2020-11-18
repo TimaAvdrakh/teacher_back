@@ -8,6 +8,7 @@ from pydantic import BaseModel
 import jwt
 from redis_utils import my_redis
 
+
 app = FastAPI()
 key = 'asadfasdkfjasdif[jasdifasd[oij'
 # def check_jwt(jwt, key):
@@ -33,7 +34,7 @@ async def check(phone:str, ):
     return r.read(phone)
 
 @app.get("/auth1/")
-async def auth(phone: str, jwt_token: Optional[str] = None, debug: bool = False):
+async def auth(phone: str, jwt_token: Optional[str] = None, debug: Optional[bool] = False):
     obj = {}
     if debug:
         try:
@@ -48,7 +49,7 @@ async def auth(phone: str, jwt_token: Optional[str] = None, debug: bool = False)
             jwt.decode(jwt, data['sk'], algorithms=["HS256"])
         except:
             print("JWT Error")
-            raise jwt.exceptions.ExpiredSignatureError
+            raise HTTPException(status=400, detail="Authentication Failed JWT ERROR")
     else:
         obj['uid'] = 111
         obj['oid'] = 1
