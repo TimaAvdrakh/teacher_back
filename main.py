@@ -49,7 +49,7 @@ async def auth(phone: str, jwt_token: Optional[str] = None, debug: Optional[bool
             jwt.decode(jwt, data['sk'], algorithms=["HS256"])
         except:
             print("JWT Error")
-            raise HTTPException(status=400, detail="Authentication Failed JWT ERROR")
+            raise HTTPException(status_code=400, detail="Authentication Failed JWT ERROR")
     else:
         obj['uid'] = 111
         obj['oid'] = 1
