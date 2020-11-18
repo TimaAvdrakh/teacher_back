@@ -54,13 +54,14 @@ async def auth(phone: str, jwt_token: Optional[str] = None, debug: Optional[bool
             print("JWT Error", e)
             raise HTTPException(status_code=400, detail="Authentication Failed JWT ERROR")
     else:
-        obj['uid'] = 780
+        obj['uid'] = 111
         obj['oid'] = 1
         obj['sk'] = 'fakefakefake'
 
     cn = selects.connect_database()
     rq = selects.teacher_org(cn, obj['oid'])
-    t_id = selects.get_teacher_id(obj['uid'])
+    t_id = selects.get_teacher_id(111)
+    print(t_id)
     selects.close_connection(cn)
     return {
         'type': 'auth',
