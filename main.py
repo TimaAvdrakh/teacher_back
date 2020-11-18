@@ -65,7 +65,8 @@ async def auth(phone: str, jwt_token: Optional[str] = None, debug: Optional[bool
     selects.close_connection(cn)
     return {
         'type': 'auth',
-        'uid': obj['uid'],
+        # 'uid': obj['uid'],
+        'uid': 111,
         'school': rq['school'],
         'address': rq['address'],
         't_id': str(t_id[0]),
