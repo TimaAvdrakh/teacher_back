@@ -201,6 +201,7 @@ def all_class_with_final(class_i, subject_i):
     ar = [f"nvl(sf.{num}_{var},0)" for num in ['first', 'second', 'third', 'forth'] for var in
           ['sor1', 'sor2', 'sor3', 'soch', 'final']]
 
+
     temp = ", ".join(ar)
     sql = (
         f"select student_per_id, first_name, last_name,  {temp} , nvl(sf.final_grade, 0) "
@@ -211,6 +212,7 @@ def all_class_with_final(class_i, subject_i):
         f"on student_per_id = student_i and subject_i = {subject_i} "
         f"where class_id = {class_i}; "
     )
+    print(sql)
     cr = cn.cursor()
     cr.execute(sql)
     rows = cr.fetchall()
