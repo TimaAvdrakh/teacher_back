@@ -285,6 +285,11 @@ def accessment(student_i, subject_i, lbl, grade):
         cr.execute(sql_final)
         cn.commit()
 
+        return {
+            'soch': sem_final_val,
+            'final': None
+        }
+
         if name == 'forth':
             ar = ['first', 'second', 'third', 'forth']
             ar = list(map(lambda x: f"{x}_final", ar))
@@ -308,7 +313,8 @@ def accessment(student_i, subject_i, lbl, grade):
             cn.commit()
 
         return {
-            'detail': 'semester_final ready'
+            'soch': sem_final_val,
+            'final_grade': fg
         }
     else:
         print("ITS SOR")
@@ -327,5 +333,6 @@ def accessment(student_i, subject_i, lbl, grade):
     close_connection(cn)
 
     return {
-        'detail': 'Grades Updated'
+        'soch': None,
+        'final_grade': None
     }
