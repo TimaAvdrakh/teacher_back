@@ -334,5 +334,5 @@ def accessment(student_i, subject_i, lbl, grade):
 
     return {
         'soch': None,
-        'final_grade': None
+        'final': None
     }

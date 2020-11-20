@@ -75,7 +75,7 @@ async def auth(phone: str, jwt_token: Optional[str] = None, debug: Optional[bool
 
 
 @app.get("/auth/")
-async def auth(phone: str, jwt_token: Optional[str] = None):
+async def auth(phone: str, jwt_token: Optional[str] = None, debug:Optional[bool] = False):
     print(phone)
     obj = {}
     obj['uid'] = 111
