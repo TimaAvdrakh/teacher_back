@@ -274,10 +274,20 @@ def accessment(student_i, subject_i, lbl, grade):
         sem_final = f"{name}_final"
         # row = rows[0]
         sem_final_val = ((row[0] + row[1] + row[2] + sum_of_all_class_bals )/ 8 ) + (row[3] * 0.5)
+        ans = 0
+        if sem_final_val < 40:
+            ans = 2
+        elif sem_final_val >= 40 and sem_final_val < 65:
+            ans = 3
+        elif sem_final_val >= 65 and sem_final_val <= 84:
+            ans = 4
+        else:
+            ans = 5
+
 
         sql_final = (
             f"update school_final "
-            f"set {sem_final} = {sem_final_val} "
+            f"set {sem_final} = {ans} "
             f"where subject_i = {subject_i} "
             f"and student_i = {student_i} and c_year = {c_y};"
         )

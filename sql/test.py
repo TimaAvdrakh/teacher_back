@@ -74,18 +74,42 @@ def insert_subjects():
 #     },
 #
 # ]
+def insert_schedule():
+    data = [
+        {
+        's_time': "11:30:00",
+        's_week': 1,
+        'subject_i': 42,
+        'teacher_i': 19,
+        'class_i': 39,
+        },
+        {
+        's_time': "12:30:00",
+        's_week': 1,
+        'subject_i': 45,
+        'teacher_i': 19,
+        'class_i': 42,
+        },
+        {
+        's_time': "13:30:00",
+        's_week': 1,
+        'subject_i': 45,
+        'teacher_i': 19,
+        'class_i': 42,
+        },
+    ]
 
-def update_school():
-    cn = connect_database()
+    for i in data:
 
-    sql = (
-        f"update org_addr "
-        f"set addr_note = 'Бокенбай Батыра, 46' "
-        f"where org_i = 1; "
-    )
-    cr = cn.cursor()
-    cr.execute(sql)
-    cn.commit()
-    close_connection(cn)
+        one = ",".join(i.keys())
+        print(one)
+        two = ",".join(str(temp) for temp in i.values() if type(temp) == 'int')/
+        sql = (
+            f"insert into school_schedule "
+            f"({one},c_year, own_i, room) "
+            f"values ('{i['s_time']}',{}, 2020, 0, 201);"
+        )
+        print(sql)
 
-update_school()
+
+insert_schedule()
