@@ -23,6 +23,9 @@ def connect_database():
         sys.exit(1)
     return con
 # class_notify(10,10, 'suckers')
+
+
+
 def check(label):
     if label.split('_')[-1] == 'soch':
         name = label.split('_')[0]
