@@ -330,7 +330,7 @@ def p_class(cn, teacher_i):
         'class': cl,
         'teacher_i': teacher_i,
         'class_id': cl_i,
-        'amount': amount,
+        'amount': amount+1,
         'students': students
     }
 
