@@ -344,6 +344,6 @@ async def insert_accessment(student_i: int = Body(None, embed=True),
     return {
         'message': "Data is terminated to database",
         'soch': data['soch'],
-        'final': data['final']
+        'final': data['final_grade']
     }
 

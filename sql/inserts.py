@@ -300,7 +300,7 @@ def accessment(student_i, subject_i, lbl, grade):
 
         return {
             'soch': final_5,
-            'final': None
+            'final_grade': None
         }
 
         if name == 'forth':
