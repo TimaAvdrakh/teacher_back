@@ -175,12 +175,12 @@ def student_log_notification(student_i, message):
 
 
     for data in student_i:
-        print(data.phone)
+        print(data)
         req = (
             f"https://smsc.kz/sys/send.php?"
             f"login={SMS_LOGIN}"
             f"&psw={SMS_PASS}"
-            f"&phones={data.phone}"
+            f"&phones={data}"
             f"&mes={m}"
             f"&fmt=3"
         )

@@ -25,15 +25,9 @@ def connect_database():
 # class_notify(10,10, 'suckers')
 
 
-def update_org_name():
+
+def insert_schedule():
     sql = (
-        f"update org set "
-        f"lbl = 'Средняя IT школа-лицей №72' "
-        f"where org_i = 1;"
+        f"insert into school_schedule "
+        f"()"
     )
-    cn = connect_database()
-    cr = cn.cursor()
-    cr.execute(sql)
-    cn.commit()
-    close_connection(cn)
-update_org_name()
