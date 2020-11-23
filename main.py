@@ -2,7 +2,7 @@ from fastapi import FastAPI, Body, Header, Request, BackgroundTasks, HTTPExcepti
 from sql import inserts, selects
 from utils.find_date import find_date
 import datetime
-from schemas.schemas import Student, StudentGrade
+from schemas.schemas import Student, StudentGrade,StudentPhone
 from typing import List, Optional
 from pydantic import BaseModel
 import jwt
@@ -298,16 +298,15 @@ async def all_class_notify(jwt_token: Optional[str] = None,
 
 
 @app.post('/notification/class_selected')
-async def notify_selected_students(jwt_token: Optional[str] = None, students: List[int] = Body(default=[], embed=True), message: str = Body(default='None', embed=True)):
-    cn = selects.connect_database()
+async def notify_selected_students(jwt_token: Optional[str] = None, students: List[StudentPhone] = Body(default=[], embed=True), message: str = Body(default='None', embed=True)):
+
     ## Todo send To selected students
 
-    for student_i in students:
-        inserts.student_log_notification(cn, student_i, message)
-    selects.close_connection(cn)
-    return {
 
-        "message": "Notification send"
+    data = inserts.student_log_notification(students, message)
+
+    return {
+        "message": data['detail']
     }
 
 

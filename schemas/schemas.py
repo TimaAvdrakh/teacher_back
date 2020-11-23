@@ -7,3 +7,7 @@ class Student(BaseModel):
 
 class StudentGrade(Student):
     lbl: str
+
+class StudentPhone(BaseModel):
+    id: int
+    phone: int

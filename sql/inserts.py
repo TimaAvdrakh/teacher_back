@@ -2,7 +2,7 @@ import pymysql
 from datetime import datetime, timedelta
 import datetime as dtm
 import mariadb
-
+import requests
 # _mysql = pymysql.install_as_MySQLdb()
 def reformat_date(str):
     "from 20-10-25 to 25/10/20"
@@ -14,11 +14,11 @@ def connect_database():
         con = mariadb.connect(
             user="admin",
             password="adm2016@=",
-            # host="nst.usmcontrol.com",
+            host="nst.usmcontrol.com",
             db='odm',
-            # port=6033
-            host="10.10.20.50",
-            port=3306
+            port=6033
+            # host="10.10.20.50",
+            # port=3306
         )
     except mariadb.Error as e:
         print(f"Error connecting to MariaDB Platform: {e}")
@@ -166,17 +166,28 @@ def task_dates(cn, teacher_i,class_i,subject_i, dt):
         'date': ans
     }
 
-def student_log_notification(cn, student_i, message):
-    cr = cn.cursor()
-    m = "Сообщение от учитeля"
-    sql = (
-        f"insert into school_log "
-        f"(student_i, e_typ, e_detail) "
-        f"values ({student_i}, '{m}', '{message}'); "
-    )
-    cr.execute(sql)
-    cn.commit()
 
+def student_log_notification(student_i, message):
+    m = f"Сообщение от школьного руководителя : 109.akt.kz"
+
+    SMS_LOGIN = "ab@slidtech.com"
+    SMS_PASS = "Qw123456!"
+
+
+    for data in student_i:
+        print(data.phone)
+        req = (
+            f"https://smsc.kz/sys/send.php?"
+            f"login={SMS_LOGIN}"
+            f"&psw={SMS_PASS}"
+            f"&phones={data.phone}"
+            f"&mes={m}"
+            f"&fmt=3"
+        )
+        print(req)
+        one = requests.get(req)
+
+        print(one.content)
     return {
         "detail": "message send to student"
     }
