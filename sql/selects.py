@@ -217,6 +217,8 @@ def all_class_with_final(class_i, subject_i):
     cr.execute(sql)
     rows = cr.fetchall()
     ans = []
+
+
     for row in rows:
         temp = {
             'student_per_id': row[0],
@@ -286,7 +288,7 @@ def journal_task(cn, sch_i, dt):
     print(homework)
     if homework:
         return homework
-    return "No homework"
+    return "Повторение"
 
 
 def p_class(cn, teacher_i):
@@ -309,10 +311,16 @@ def p_class(cn, teacher_i):
     cl = rows[0][1]
     cl_i = rows[0][5]
     teacher_i = rows[0][4]
+    saparhan = {
+        'name': f"Сапархан Тургынбаев",
+        'student_i': 40,
+        'phone': "87022966496"
+    }
+    students.append(saparhan)
     for row in rows:
         temp = {
             'name': f"{row[2]} {row[3]}",
-            'student_i': row[0],
+            'student_i': 40,
             'phone': "+12321321313"
         }
         students.append(temp)
@@ -338,13 +346,19 @@ def student_parents(cn, student_id):
     cr.execute(sql)
     rows = cr.fetchall()
 
+    bolatbek_agai = {
+        "name": "Болатбек Жанбыршиев",
+        "phone": "+77083353601",
+    }
     ans = []
+    ans.append(bolatbek_agai)
     for row in rows[:2]:
         temp = {
             "name": f"{row[0]} {row[1]}",
-            "phone": "+8273388393"
+            "phone": "8273388393"
         }
         ans.append(temp)
+
     return ans
 
 
