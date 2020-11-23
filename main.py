@@ -236,12 +236,22 @@ async def teacher_journal(teacher_i: int, date: str, jwt_token: Optional[str]):
     ans = []
     counter = 1
     print(q)
+
+
+
     for row in q:
         # sc.sch_i, sc.s_time, sub.lbl, cl.lbl
         query = selects.journal_task(cn, row[0], date)
+
+        one, two, three = f"{row[1]}".split(':')
+        if len(one) == 1:
+            time = f"0{one}:{two}:{three}"
+        else:
+            time = f"{row[1]}"
+
         temp = {
             "id": counter,
-            "time": f"{row[1]}",
+            "time": time,
             "subject": row[2],
             "class": row[3],
             "homework": query,
