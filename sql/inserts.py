@@ -254,7 +254,8 @@ def accessment(student_i, subject_i, lbl, grade):
             f"values "
             f"({student_i}, {subject_i}, {grade}, {c_y}, 1) "
             f"on duplicate key update "
-            f"{lbl} = {grade};"
+            f"{lbl} = {grade},"
+            f";"
         )
         cr.execute(sql0)
         cn.commit()
@@ -285,6 +286,7 @@ def accessment(student_i, subject_i, lbl, grade):
         else:
             final_5 = 5
 
+        print(final_5)
 
         sql_final = (
             f"update school_final "
@@ -297,7 +299,7 @@ def accessment(student_i, subject_i, lbl, grade):
         cn.commit()
 
         return {
-            'soch': sem_final_val,
+            'soch': final_5,
             'final': None
         }
 
@@ -324,8 +326,8 @@ def accessment(student_i, subject_i, lbl, grade):
             cn.commit()
 
         return {
-            'soch': sem_final_val,
-            'final_grade': fg
+            'soch': final_5,
+            'final_grade': int(fg)
         }
     else:
         print("ITS SOR")
