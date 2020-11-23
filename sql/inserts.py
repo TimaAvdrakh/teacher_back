@@ -316,7 +316,7 @@ def accessment(student_i, subject_i, lbl, grade):
             row = cr.fetchone()
             fg = row[0] + row[1] + row[2] + row[3]
             fg = fg/4
-
+            fg = round(fg)
             sql3 = (
                 f"update school_final "
                 f"set final_grade = {fg} "
@@ -327,7 +327,7 @@ def accessment(student_i, subject_i, lbl, grade):
 
         return {
             'soch': final_5,
-            'final_grade': round(fg)
+            'final_grade': fg
         }
     else:
         print("ITS SOR")
