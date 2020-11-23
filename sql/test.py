@@ -48,7 +48,7 @@ def check(label):
 
 def insert_subjects():
     cn = connect_database()
-    list = ['Технология', 'Окружающий мир', 'ОБЖ', 'Ритмика']
+    lists = ['Алгебра','Геометрия']
     cr = cn.cursor()
     for row in list:
         sql = (
