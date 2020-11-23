@@ -298,10 +298,6 @@ def accessment(student_i, subject_i, lbl, grade):
         cr.execute(sql_final)
         cn.commit()
 
-        return {
-            'soch': final_5,
-            'final_grade': None
-        }
 
         if name == 'forth':
             ar = ['first', 'second', 'third', 'forth']
@@ -330,6 +326,11 @@ def accessment(student_i, subject_i, lbl, grade):
                 'soch': final_5,
                 'final_grade': fg
             }
+
+        return {
+            'soch': final_5,
+            'final_grade': None
+        }
     else:
         print("ITS SOR")
         sql = (
