@@ -298,7 +298,7 @@ async def all_class_notify(jwt_token: Optional[str] = None,
 
 
 @app.post('/notification/class_selected')
-async def notify_selected_students(jwt_token: Optional[str] = None, students: List[StudentPhone] = Body(default=[], embed=True), message: str = Body(default='None', embed=True)):
+async def notify_selected_students(students: List[StudentPhone] ,jwt_token: Optional[str] = None, message: str = Body(default='None', embed=True)):
 
     ## Todo send To selected students
 
