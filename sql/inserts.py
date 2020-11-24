@@ -166,7 +166,7 @@ def task_dates(cn, teacher_i, class_i, subject_i, dt):
             str = reformat_date(str)
             ans.append(str)
             counter += 1
-            add += 1
+            # add += 1
 
     return {
         'date': ans
