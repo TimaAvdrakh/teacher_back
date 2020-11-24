@@ -25,9 +25,40 @@ def connect_database():
 # class_notify(10,10, 'suckers')
 
 
-
+# 42 45 2
 def insert_schedule():
     sql = (
         f"insert into school_schedule "
-        f"()"
+        f"(s_time, s_week, subject_i, teacher_i,class_i, c_year, own_i, room) "
+        f"values "
+        f"('16:00:00', 1, 42, 19, 3, 2020,1,201);"
     )
+    cn = connect_database()
+    cr = cn.cursor()
+    cr.execute(sql)
+    cn.commit()
+    close_connection(cn)
+
+def update_schedule():
+    sql = (
+        f"update school_schedule "
+        f"set class_i = 48 where "
+        f"sch_i=60;"
+    )
+    cn = connect_database()
+    cr = cn.cursor()
+    cr.execute(sql)
+    cn.commit()
+    close_connection(cn)
+def select():
+    sql = (
+        f"select * from school_schedule "
+        f"where teacher_i = 19 and s_week = 1;"
+    )
+    cn = connect_database()
+    cr =cn.cursor()
+    cr.execute(sql)
+    rows = cr.fetchall()
+    print(rows)
+    close_connection(cn)
+insert_schedule()
