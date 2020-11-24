@@ -256,7 +256,7 @@ def accessment(student_i, subject_i, lbl, grade):
     #     )
 
     if lbl.split('_')[-1] == 'soch':
-        print("SOCH BITCH")
+        print("SOCH")
         # checker if data if full or none
         name = lbl.split('_')[0]
         sors = ['sor1', 'sor2', 'sor3', 'soch']
@@ -346,7 +346,6 @@ def accessment(student_i, subject_i, lbl, grade):
 
         return {
             'soch': final_5,
-            'final_grade': None
         }
     else:
         print("ITS SOR")
@@ -365,6 +364,4 @@ def accessment(student_i, subject_i, lbl, grade):
     close_connection(cn)
 
     return {
-        'soch': None,
-        'final_grade': None
     }
