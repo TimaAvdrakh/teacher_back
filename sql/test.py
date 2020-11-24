@@ -31,7 +31,7 @@ def insert_schedule():
         f"insert into school_schedule "
         f"(s_time, s_week, subject_i, teacher_i,class_i, c_year, own_i, room) "
         f"values "
-        f"('16:00:00', 1, 42, 19, 3, 2020,1,201);"
+        f"('09:30:00', 5, 2, 19, 45, 2020,1,201);"
     )
     cn = connect_database()
     cr = cn.cursor()

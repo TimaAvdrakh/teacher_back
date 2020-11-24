@@ -1,12 +1,16 @@
 from pydantic import BaseModel
+from typing import Optional
+
 
 class Student(BaseModel):
     student_i: int
     vst: bool = False
     pnt: int
 
+
 class StudentGrade(Student):
-    lbl: str
+    lbl: Optional[str] = Field(None, max_length=300)
+
 
 class StudentPhone(BaseModel):
     id: int
