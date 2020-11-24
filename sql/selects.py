@@ -12,9 +12,9 @@ def connect_database():
             host="10.10.20.50",
             # port=6033,
             database='odm',
-            # port=3306
-            # host = "nst.usmcontrol.com",
             port=3306
+            # host = "nst.usmcontrol.com",
+            # port=3306
         )
     except mariadb.Error as e:
         print(f"Error connecting to MariaDB Platform: {e}")

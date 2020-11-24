@@ -4,6 +4,7 @@ import datetime as dtm
 import mariadb
 import requests
 # _mysql = pymysql.install_as_MySQLdb()
+
 def reformat_date(str):
     "from 20-10-25 to 25/10/20"
     year , month, day = [i for i in str.split('-')]
@@ -129,7 +130,7 @@ def task(cn, sch_i, lbl, dt=None):
     }
 
 
-def task_dates(cn, teacher_i,class_i,subject_i, dt):
+def task_dates(cn, teacher_i, class_i, subject_i, dt):
     date = [i for i in dt.split(' ')]
     dt = date[1]
     day, month, year = [int(i) for i in dt.split('/')]
@@ -150,17 +151,18 @@ def task_dates(cn, teacher_i,class_i,subject_i, dt):
     days = [row[0] for row in rows]
     counter = 0
     ans = []
+    print(date)
     add = 1
     while counter < 3:
-        if len(days) == 1:
-           add = 7
         date += timedelta(days=add)
         if date.weekday() in days:
             d = date.date()
+            print(d)
             str = f"{d}"
             str = reformat_date(str)
             ans.append(str)
             counter += 1
+            add += 1
 
     return {
         'date': ans

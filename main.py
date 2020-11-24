@@ -86,13 +86,12 @@ async def auth(phone: str, jwt_token: Optional[str] = None):
     print(rq)
     t_id = selects.get_teacher_id(obj['uid'])
     selects.close_connection(cn)
-    t_id =[19]
     print({
         'type': 'auth',
         'uid': obj['uid'],
         'school': rq['school'],
         'address': rq['address'],
-        't_id': t_id[0]
+        't_id': obj['ti']
     })
     return {
         'type': 'auth',
