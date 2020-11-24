@@ -149,6 +149,10 @@ def task_dates(cn, teacher_i, class_i, subject_i, dt):
     cr.execute(sql)
     rows = cr.fetchall()
     days = [row[0] for row in rows]
+    if len(days) == 0:
+        return {
+            'date': "NO such subject in given class"
+        }
     counter = 0
     ans = []
     print(date)
