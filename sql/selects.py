@@ -322,7 +322,7 @@ def p_class(cn, teacher_i):
         temp = {
             'name': f"{row[2]} {row[3]}",
             'student_i': row[0],
-            'phone': phone[:10]
+            'phone': phone[:11]
         }
         students.append(temp)
 
