@@ -318,11 +318,11 @@ def p_class(cn, teacher_i):
     }
     students.append(saparhan)
     for row in rows:
-        phone = f"+77771233{row[0]}"
+        phone = f"+777711323{row[0]}"
         temp = {
             'name': f"{row[2]} {row[3]}",
             'student_i': row[0],
-            'phone': phone[:11]
+            'phone': phone[:13]
         }
         students.append(temp)
 
