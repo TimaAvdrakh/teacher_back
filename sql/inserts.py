@@ -66,6 +66,7 @@ def grade(con, list, sch_i, dt):
     dt = f"{year}-{month}-{day}"
     c_dt = datetime.now()
     print("Updating Grade")
+    print(c_dt)
     type = 'Посещение'
 
     for row in list:
