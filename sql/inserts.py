@@ -67,7 +67,7 @@ def grade(con, list, sch_i, dt):
     c_dt = datetime.now()
     print("Updating Grade")
     print(c_dt)
-    type = 'Успеваемось'
+    type = 'Успеваемость'
 
     for row in list:
         sql = (
