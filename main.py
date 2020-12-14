@@ -338,9 +338,7 @@ async def insert_accessment(student_i: int = Body(None, embed=True),
                             lbl: str = Body(None, embed=True),
                             grade: int = Body(None, embed=True)):
 
-    inserts.accessment(student_i, subject_i, lbl, grade)
+    data = inserts.accessment(student_i, subject_i, lbl, grade)
 
-    return {
-        'message': "Data is terminated to database"
-    }
+    return data
 
