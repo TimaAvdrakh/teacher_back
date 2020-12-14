@@ -2,7 +2,7 @@ from fastapi import FastAPI, Body, Header, Request, BackgroundTasks, HTTPExcepti
 from sql import inserts, selects
 from utils.find_date import find_date
 import datetime
-from schemas.schemas import Student, StudentGrade,StudentPhone
+from schemas.schemas import Student, StudentGrade
 from typing import List, Optional
 from pydantic import BaseModel
 import jwt
@@ -91,7 +91,7 @@ async def auth(phone: str, jwt_token: Optional[str] = None):
         'uid': obj['uid'],
         'school': rq['school'],
         'address': rq['address'],
-        't_id': obj['ti']
+        't_id': t_id[0]
     })
     return {
         'type': 'auth',
@@ -236,19 +236,16 @@ async def teacher_journal(teacher_i: int, date: str, jwt_token: Optional[str]):
     ans = []
     counter = 1
     print(q)
-
-
-
     for row in q:
         # sc.sch_i, sc.s_time, sub.lbl, cl.lbl
         query = selects.journal_task(cn, row[0], date)
-
+        print(row[1])
+        # one = datetime.datetime.fromtimestamp(row[1]).strftime("%I:%M:%S")
         one, two, three = f"{row[1]}".split(':')
         if len(one) == 1:
             time = f"0{one}:{two}:{three}"
         else:
             time = f"{row[1]}"
-
         temp = {
             "id": counter,
             "time": time,
@@ -298,15 +295,16 @@ async def all_class_notify(jwt_token: Optional[str] = None,
 
 
 @app.post('/notification/class_selected')
-async def notify_selected_students(students: List[int] ,jwt_token: Optional[str] = None, message: str = Body(default='None', embed=True)):
-
+async def notify_selected_students(jwt_token: Optional[str] = None, students: List[int] = Body(default=[], embed=True), message: str = Body(default='None', embed=True)):
+    cn = selects.connect_database()
     ## Todo send To selected students
 
-
-    data = inserts.student_log_notification(students, message)
-
+    for student_i in students:
+        inserts.student_log_notification(cn, student_i, message)
+    selects.close_connection(cn)
     return {
-        "message": data['detail']
+
+        "message": "Notification send"
     }
 
 
@@ -338,6 +336,9 @@ async def insert_accessment(student_i: int = Body(None, embed=True),
                             lbl: str = Body(None, embed=True),
                             grade: int = Body(None, embed=True)):
 
-    data = inserts.accessment(student_i, subject_i, lbl, grade)
-    data['message'] = "Data is terminated to database"
-    return data
+    inserts.accessment(student_i, subject_i, lbl, grade)
+
+    return {
+        'message': "Data is terminated to database"
+    }
+
