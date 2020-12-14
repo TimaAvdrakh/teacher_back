@@ -266,12 +266,10 @@ def accessment(student_i, subject_i, lbl, grade):
         s = ', '.join(sors_new)
 
         sql0 = (
-            f"insert into school_final "
-            f"(student_i, subject_i, {lbl} , c_year,  own_i) "
-            f"values "
-            f"({student_i}, {subject_i}, {grade}, {c_y}, 1) "
-            f"on duplicate key update "
-            f"{lbl} = {grade};"
+            f"update school_final "
+            f"set {lbl} = {grade} "
+            f"where subject_i = {subject_i} "
+            f"and student_i = {student_i} and c_year = {c_y};"
         )
         print(sql0)
         cr.execute(sql0)
@@ -358,10 +356,12 @@ def accessment(student_i, subject_i, lbl, grade):
                 f"({student_i}, {subject_i}, {grade}, {c_y}, 1);"
             )
         else:
+
              sql = (
                  f"update school_final "
                  f"set {lbl} = {grade} "
-                 f"where student_i = {student_i} and subject_i = {subject_i};"
+                 f"where student_i = {student_i} and subject_i = {subject_i} "
+                 f"and c_y = {c_y};"
              )
         cr.execute(sql)
         cn.commit()
