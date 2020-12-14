@@ -361,7 +361,7 @@ def accessment(student_i, subject_i, lbl, grade):
                  f"update school_final "
                  f"set {lbl} = {grade} "
                  f"where student_i = {student_i} and subject_i = {subject_i} "
-                 f"and c_y = {c_y};"
+                 f"and c_year = {c_y};"
              )
         cr.execute(sql)
         cn.commit()
