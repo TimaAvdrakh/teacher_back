@@ -1,10 +1,8 @@
-from selects import get_teacher_id,connect_database, close_connection, class_students_id,all_class_students, get_data_final,teacher_org,all_class_with_final
-
 from fastapi import Request
-
+from inserts import accessment
 import jwt
 import mariadb
-
+from datetime import datetime
 # from inserts import class_notify
 def connect_database():
     try:
@@ -25,40 +23,145 @@ def connect_database():
 # class_notify(10,10, 'suckers')
 
 
-# 42 45 2
-def insert_schedule():
-    sql = (
-        f"insert into school_schedule "
-        f"(s_time, s_week, subject_i, teacher_i, class_i, c_year, own_i, room) "
-        f"values "
-        f"('11:00:00', 1, 42, 19, 1, 2020, 1, 201);"
-    )
+def close_connection(con):
+    con.close()
+
+
+def accessment(student_i, subject_i, lbl, grade):
     cn = connect_database()
     cr = cn.cursor()
-    cr.execute(sql)
-    cn.commit()
+    time = datetime.now()
+    c_y = time.year
+    # TODO CHANGE IFS IN CODE
+    # if lebel == 'forth_soch':
+    #     # ToDO calculate Final
+    #     #calculate and add forth and final
+    #     #calculate final
+    #     ff =
+    #     sql2 = (
+    #         f"update school_final "
+    #         f"set final_grade = {fg} , final_forth = {ff}"
+    #         f"where subject_i = {subject_i} "
+    #         f"and student_i={subject_i} and "
+    #         f"year = {c_y};"
+    #     )
+
+    if lbl.split('_')[-1] == 'soch':
+        print("SOCH")
+        # checker if data if full or none
+        name = lbl.split('_')[0]
+        sors = ['sor1', 'sor2', 'sor3', 'soch']
+
+        sors_new = list(map(lambda x: f"{name}_{x}", sors))
+
+        s = ', '.join(sors_new)
+
+        sql0 = (
+            f"insert into school_final "
+            f"(student_i, subject_i, {lbl} , c_year,  own_i) "
+            f"values "
+            f"({student_i}, {subject_i}, {grade}, {c_y}, 1) "
+            f"on duplicate key update "
+            f"{lbl} = {grade};"
+        )
+        print(sql0)
+        cr.execute(sql0)
+        cn.commit()
+
+
+        sql1 = (
+            f"select {s} from school_final "
+            f"where subject_i = {subject_i} "
+            f"and student_i = {student_i} "
+            f"and c_year = '{c_y}';"
+        )
+        print(sql1)
+        cr.execute(sql1)
+        row = cr.fetchone()
+        print(row)
+        sum_of_all_class_bals = 70
+        sem_final = f"{name}_final"
+        # row = rows[0]
+        sem_final_val = ((row[0] + row[1] + row[2] + sum_of_all_class_bals )/ 8 ) + (row[3] * 0.5)
+        final_5 = 0
+
+        if sem_final_val < 40:
+            final_5 = 2
+        elif sem_final_val >= 40 and sem_final_val < 65:
+            final_5 = 3
+        elif sem_final_val >= 65 and sem_final_val <= 84:
+            final_5 = 4
+        else:
+            final_5 = 5
+
+        print(final_5)
+
+        sql_final = (
+            f"update school_final "
+            f"set {sem_final} = {final_5} "
+            f"where subject_i = {subject_i} "
+            f"and student_i = {student_i} and c_year = {c_y};"
+        )
+        print(sql_final)
+        cr.execute(sql_final)
+        cn.commit()
+
+
+        if name == 'forth':
+            ar = ['first', 'second', 'third', 'forth']
+            ar = list(map(lambda x: f"{x}_final", ar))
+            far = ', '.join(ar)
+            sql2 = (
+                f"select {far} from school_final "
+                f"where subject_i = {subject_i} and student_i = {student_i} and c_year = {c_y};"
+            )
+            cr = cn.cursor()
+            cr.execute(sql2)
+            row = cr.fetchone()
+            fg = row[0] + row[1] + row[2] + row[3]
+            fg = fg/4
+            fg = round(fg)
+            print(fg)
+            sql3 = (
+                f"update school_final "
+                f"set final_grade = {fg} "
+                f"where subject_i = {subject_i} and student_i = {student_i} and c_year = {c_y};"
+            )
+            cr.execute(sql3)
+            cn.commit()
+
+            return {
+                'soch': final_5,
+                'final_grade': fg
+            }
+
+        return {
+            'soch': final_5,
+        }
+    else:
+        print("ITS SOR")
+
+        if lbl.split('_')[-1] == 'sor1':
+            sql = (
+                f"insert into school_final "
+                f"(student_i, subject_i, {lbl} , c_year,  own_i) "
+                f"values "
+                f"({student_i}, {subject_i}, {grade}, {c_y}, 1);"
+            )
+        else:
+             sql = (
+                 f"update school_final "
+                 f"set {lbl} = {grade} "
+                 f"where student_i = {student_i} and subject_i = {subject_i};"
+             )
+        cr.execute(sql)
+        cn.commit()
+
     close_connection(cn)
 
-def update_schedule():
-    sql = (
-        f"update school_schedule "
-        f"set class_i = 48 where "
-        f"sch_i=60;"
-    )
-    cn = connect_database()
-    cr = cn.cursor()
-    cr.execute(sql)
-    cn.commit()
-    close_connection(cn)
-def select():
-    sql = (
-        f"select * from school_schedule "
-        f"where teacher_i = 19 and s_week = 1;"
-    )
-    cn = connect_database()
-    cr =cn.cursor()
-    cr.execute(sql)
-    rows = cr.fetchall()
-    print(rows)
-    close_connection(cn)
-insert_schedule()
+    return {}
+
+def test():
+    accessment(524, 111, 'first_sor3', 80)
+
+test()

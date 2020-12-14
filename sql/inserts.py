@@ -76,7 +76,6 @@ def grade(con, list, sch_i, dt):
             f"where sch_i= {sch_i} and student_i = {row.student_i}  and dt = '{dt}'; "
         )
 
-        #INSERT TO LOG
         sql_subject = (
             f"select lbl "
             f"from school_subject sj "
@@ -350,19 +349,23 @@ def accessment(student_i, subject_i, lbl, grade):
         }
     else:
         print("ITS SOR")
-        sql = (
-            f"insert into school_final "
-            f"(student_i, subject_i, {lbl} , c_year,  own_i) "
-            f"values "
-            f"({student_i}, {subject_i}, {grade}, {c_y}, 1) "
-            f"on duplicate key update "
-            f"{lbl} = {grade};"
-        )
-        print(sql)
+
+        if lbl.split('_')[-1] == 'sor1':
+            sql = (
+                f"insert into school_final "
+                f"(student_i, subject_i, {lbl} , c_year,  own_i) "
+                f"values "
+                f"({student_i}, {subject_i}, {grade}, {c_y}, 1);"
+            )
+        else:
+             sql = (
+                 f"update school_final "
+                 f"set {lbl} = {grade} "
+                 f"where student_i = {student_i} and subject_i = {subject_i};"
+             )
         cr.execute(sql)
         cn.commit()
 
     close_connection(cn)
 
-    return {
-    }
+    return {}

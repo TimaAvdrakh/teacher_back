@@ -146,12 +146,14 @@ async def root(class_id: int, jwt_token: Optional[str] = None):
         'students': q['data']
     }
 
+
 @app.get('/students/test/')
 async def get(class_id:int , subject_i:int, jwt_token: Optional[str] = None):
     print("ALL STUDENT DATA")
     q = selects.all_class_with_final(class_id, subject_i)
 
     return q
+
 
 @app.post('/attendance/', status_code=201)
 async def attendance(students: List[Student], date: str , sch_i: int, jwt_token: Optional[str]=None):

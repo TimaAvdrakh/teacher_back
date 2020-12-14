@@ -195,6 +195,7 @@ def all_class_students(cn, class_id):
         'data': ans
     }
 
+
 def all_class_with_final(class_i, subject_i):
     cn = connect_database()
 
