@@ -215,7 +215,7 @@ async def week_dates(date: str):
 
         year, month, day = [i for i in str(date[1]).split('-')]
         a = f"{day}/{month}/{year}"
-        ans.append([d[count], a])
+        ans.append(a)
         count += 1
 
     return {
