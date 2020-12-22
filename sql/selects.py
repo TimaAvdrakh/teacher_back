@@ -312,11 +312,11 @@ def p_class(cn, teacher_i):
     cl = rows[0][1]
     cl_i = rows[0][5]
     teacher_i = rows[0][4]
-    saparhan = {
-        'name': f"Сапархан Тургынбаев",
-        'student_i': 40,
-        'phone': "+77022966496"
-    }
+    # saparhan = {
+    #     'name': f"Сапархан Тургынбаев",
+    #     'student_i': 40,
+    #     'phone': "+77022966496"
+    # }
     students.append(saparhan)
     for row in rows:
         phone = f"+777711323{row[0]}"

@@ -173,27 +173,29 @@ def task_dates(cn, teacher_i, class_i, subject_i, dt):
     }
 
 
-def student_log_notification(student_i, message):
+def student_log_notification(students, message):
     m = f"Сообщение от школьного руководителя : 109.akt.kz"
 
     SMS_LOGIN = "ab@slidtech.com"
     SMS_PASS = "Qw123456!"
 
 
-    for data in student_i:
+    for data in students:
         print(data)
+        # data = str(data)
         req = (
             f"https://smsc.kz/sys/send.php?"
             f"login={SMS_LOGIN}"
             f"&psw={SMS_PASS}"
             f"&phones={data}"
-            f"&mes={m}"
+            f"&mes={message}"
             f"&fmt=3"
         )
         print(req)
         one = requests.get(req)
-
         print(one.content)
+
+
     return {
         "detail": "message send to student"
     }

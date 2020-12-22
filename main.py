@@ -297,15 +297,14 @@ async def all_class_notify(jwt_token: Optional[str] = None,
 
 
 @app.post('/notification/class_selected')
-async def notify_selected_students(jwt_token: Optional[str] = None, students: List[int] = Body(default=[], embed=True), message: str = Body(default='None', embed=True)):
-    cn = selects.connect_database()
-    ## Todo send To selected students
+async def notify_selected_students(students: List[str] = Body(default=[], embed=True),
+                                   message: str = Body(default='None', embed=True)):
 
-    for student_i in students:
-        inserts.student_log_notification(cn, student_i, message)
-    selects.close_connection(cn)
+    print(students)
+
+    inserts.student_log_notification(students, message)
+
     return {
-
         "message": "Notification send"
     }
 
@@ -331,6 +330,7 @@ async def notify_selected_students(jwt_token: Optional[str] = None, students: Li
 #     return {
 #         'data': data
 #     }
+
 
 @app.post('/accessments/')
 async def insert_accessment(student_i: int = Body(None, embed=True),
